@@ -38,10 +38,10 @@
 ## 文件夹
 
 ```
-Phase1_Day1_大模型能力矩阵实训包/    ← 模型评测与路由
-Phase1_Day2_Prompt产品实训包/        ← 能力模块构建
-Phase1_Day3_桌面AgentCore实训包/     ← 桌面 Agent
-Phase1_Day4_S3_掌上AI实机包/        ← 设备接入
+day1-model-evaluation/    ← 模型评测与路由
+day2-capability-modules/        ← 能力模块构建
+day3-desktop-agent/     ← 桌面 Agent
+day4-device-gateway/        ← 设备接入
 Phase1_课堂展示Deck.html             ← 课堂幻灯片
-_课程资料/                           ← API 配置、接口规范、评价规则
+resources/                           ← API 配置、接口规范、评价规则
 ```

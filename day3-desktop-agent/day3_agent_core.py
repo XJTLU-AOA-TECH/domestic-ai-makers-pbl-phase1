@@ -796,13 +796,13 @@ def read_workspace_context(workspace: Path, limit: int = 12000) -> str:
 def read_upstream_context(package_root: Path, limit: int = 8000) -> str:
     content_root = package_root.parent
     files = [
-        content_root / "Phase1_Day1_大模型能力矩阵实训包" / "outputs" / "day1_to_day2_brief.json",
-        content_root / "Phase1_Day1_大模型能力矩阵实训包" / "outputs" / "model_selection_playbook.md",
-        content_root / "Phase1_Day2_Prompt产品实训包" / "outputs" / "product_spec.json",
-        content_root / "Phase1_Day2_Prompt产品实训包" / "outputs" / "prompt_library.json",
-        content_root / "Phase1_Day2_Prompt产品实训包" / "outputs" / "context_pack" / "course_seed.md",
-        content_root / "Phase1_Day2_Prompt产品实训包" / "outputs" / "eval_cases.json",
-        content_root / "Phase1_Day2_Prompt产品实训包" / "outputs" / "agent_handoff" / "day2_agent_contract.json",
+        content_root / "day1-model-evaluation" / "outputs" / "day1_to_day2_brief.json",
+        content_root / "day1-model-evaluation" / "outputs" / "model_selection_playbook.md",
+        content_root / "day2-capability-modules" / "outputs" / "product_spec.json",
+        content_root / "day2-capability-modules" / "outputs" / "prompt_library.json",
+        content_root / "day2-capability-modules" / "outputs" / "context_pack" / "course_seed.md",
+        content_root / "day2-capability-modules" / "outputs" / "eval_cases.json",
+        content_root / "day2-capability-modules" / "outputs" / "agent_handoff" / "day2_agent_contract.json",
     ]
     parts: List[str] = []
     for path in files:

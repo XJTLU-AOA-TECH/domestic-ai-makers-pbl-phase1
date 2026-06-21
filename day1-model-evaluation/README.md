@@ -137,7 +137,7 @@ python -m pip install requests
 **你需要让每个模型回答你的每个题目。有几种做法：**
 
 **方案A（最简单）：用老师提供的 Python 脚本自动跑**
-1. 打开 `_课程资料/local_siliconflow.env`，把你的 API Key 填进去
+1. 打开 `resources/local_siliconflow.env`，把你的 API Key 填进去
 2. 把 `MOCK_LLM=0` 改成 `MOCK_LLM=0`（真跑模式）
 3. 双击 `run_day1_arena.command`（Mac）或 `run_day1_arena.bat`（Windows）
 4. 等待终端跑完，每个模型对每个题目的回答都会记录下来
@@ -208,7 +208,7 @@ python -m pip install requests
 → 用方案B：去模型官网的网页端逐个输入题目，截图保存，然后对照 `day1_results.json` 的格式手动填一张表（共15行：3个模型×5个任务）
 
 **我拿到 API Key 但不知道往哪填**
-→ 打开 `_课程资料/local_siliconflow.env`，把 `sk-xxx` 替换成你的 key
+→ 打开 `resources/local_siliconflow.env`，把 `sk-xxx` 替换成你的 key
 
 
 ---
@@ -325,7 +325,7 @@ python -m pip install requests
 **你需要让每个模型回答你的每个题目。有几种做法：**
 
 **方案A（最简单）：用老师提供的 Python 脚本自动跑**
-1. 打开 `_课程资料/local_siliconflow.env`，把你的 API Key 填进去
+1. 打开 `resources/local_siliconflow.env`，把你的 API Key 填进去
 2. 把 `MOCK_LLM=0` 改成 `MOCK_LLM=0`（真跑模式）
 3. 双击 `run_day1_arena.command`（Mac）或 `run_day1_arena.bat`（Windows）
 4. 等待终端跑完，每个模型对每个题目的回答都会记录下来
@@ -396,4 +396,4 @@ python -m pip install requests
 → 用方案B：去模型官网的网页端逐个输入题目，截图保存，然后对照 `day1_results.json` 的格式手动填一张表（共15行：3个模型×5个任务）
 
 **我拿到 API Key 但不知道往哪填**
-→ 打开 `_课程资料/local_siliconflow.env`，把 `sk-xxx` 替换成你的 key
+→ 打开 `resources/local_siliconflow.env`，把 `sk-xxx` 替换成你的 key

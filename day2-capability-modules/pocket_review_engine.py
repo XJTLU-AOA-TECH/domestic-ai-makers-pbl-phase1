@@ -9,8 +9,8 @@ from typing import Any, Dict, List
 ROOT = Path(__file__).resolve().parent
 OUT = ROOT / "outputs"
 CONTENT_ROOT = ROOT.parent
-DAY1_BRIEF = CONTENT_ROOT / "Phase1_Day1_大模型能力矩阵实训包" / "outputs" / "day1_to_day2_brief.json"
-DAY3_SUMMARY = CONTENT_ROOT / "Phase1_Day3_桌面AgentCore实训包" / "outputs" / "agent_workspace" / "summaries" / "course_summary.md"
+DAY1_BRIEF = CONTENT_ROOT / "day1-model-evaluation" / "outputs" / "day1_to_day2_brief.json"
+DAY3_SUMMARY = CONTENT_ROOT / "day3-desktop-agent" / "outputs" / "agent_workspace" / "summaries" / "course_summary.md"
 
 
 def now() -> str:

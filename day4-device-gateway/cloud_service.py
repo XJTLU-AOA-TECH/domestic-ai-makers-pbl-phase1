@@ -21,9 +21,9 @@ except ModuleNotFoundError:
 
 ROOT = Path(__file__).resolve().parent
 PRODUCT_ROOT = ROOT.parent
-DAY1_ROOT = PRODUCT_ROOT / "Phase1_Day1_大模型能力矩阵实训包" / "outputs"
-DAY2_ROOT = PRODUCT_ROOT / "Phase1_Day2_Prompt产品实训包" / "outputs"
-DAY3_PACKAGE = PRODUCT_ROOT / "Phase1_Day3_桌面AgentCore实训包"
+DAY1_ROOT = PRODUCT_ROOT / "day1-model-evaluation" / "outputs"
+DAY2_ROOT = PRODUCT_ROOT / "day2-capability-modules" / "outputs"
+DAY3_PACKAGE = PRODUCT_ROOT / "day3-desktop-agent"
 DAY3_OUTPUTS = DAY3_PACKAGE / "outputs"
 DAY3_WORKSPACE = DAY3_OUTPUTS / "agent_workspace"
 DAY3_CORE_PATH = DAY3_PACKAGE / "day3_agent_core.py"
