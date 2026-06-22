@@ -1,7 +1,8 @@
 {
-  "generated_at": "2026-06-22T14:10:15",
+  "generated_at": "2026-06-22T15:07:55",
   "provider": "SiliconFlow",
-  "policy_version": "2.0",
+  "policy_version": "3.0",
+  "scoring_method": "5维加权评分（完整性+准确性+结构性+深度+可用性）",
   "model_pool": {
     "total_models": 5,
     "text_models": 3,
@@ -35,10 +36,9 @@
     ]
   },
   "selection_rules": {
-    "text_planning": "优先文本模型(DeepSeek系列)，快速稳定",
-    "text_code": "DeepSeek-V3.2代码审查最细致，DeepSeek-V4-Flash最快",
-    "vision": "图像任务必须路由到视觉模型(Qwen3-VL系列)",
-    "fallback": "所有任务 -> DeepSeek-V4-Flash通用兜底"
+    "text_planning": "优先文本模型",
+    "vision": "强制视觉模型",
+    "fallback": "DeepSeek-V4-Flash通用兜底"
   },
   "tasks": [
     "团队任务分配与排期",

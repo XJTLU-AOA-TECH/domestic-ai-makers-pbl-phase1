@@ -1,41 +1,41 @@
 {
-  "generated_at": "2026-06-22T14:10:15",
-  "purpose": "基于通用团队协作场景的5模型评测，为Day2提供差异化模型路由",
+  "generated_at": "2026-06-22T15:07:55",
+  "purpose": "基于5维分项评分的差异化模型路由",
   "router": {
     "product_planner": {
       "preferred_model": "DeepSeek-V3.2",
       "score": 4,
-      "fallback_rule": "主模型DeepSeek-V3.2不可用时切换至Qwen3-VL-8B",
+      "fallback_rule": "切换至Qwen3-VL-32B",
       "evidence_task": "team_task_001"
     },
     "context_designer": {
-      "preferred_model": "Qwen3-VL-8B",
-      "score": 4,
-      "fallback_rule": "主模型Qwen3-VL-8B不可用时切换至DeepSeek-V4-Flash",
+      "preferred_model": "DeepSeek-V4-Flash",
+      "score": 5,
+      "fallback_rule": "切换至Qwen3-VL-8B",
       "evidence_task": "meeting_coord_001"
     },
     "schema_generator": {
       "preferred_model": "DeepSeek-V4-Flash",
-      "score": 4,
-      "fallback_rule": "主模型DeepSeek-V4-Flash不可用时切换至Qwen3-VL-8B",
+      "score": 3,
+      "fallback_rule": "切换至Qwen3-VL-8B",
       "evidence_task": "project_risk_001"
     },
     "code_assistant": {
       "preferred_model": "DeepSeek-V4-Flash",
-      "score": 5,
-      "fallback_rule": "主模型DeepSeek-V4-Flash不可用时切换至Qwen3-VL-8B",
+      "score": 4,
+      "fallback_rule": "切换至Qwen3-VL-8B",
       "evidence_task": "code_review_001"
     },
     "risk_checker": {
       "preferred_model": "Qwen3-VL-8B",
       "score": 4,
-      "fallback_rule": "独立审查模型Qwen3-VL-8B失败时切换至Qwen3.6-27B。必须与code_assistant(DeepSeek-V4-Flash)使用不同模型以保证审查独立性。",
+      "fallback_rule": "独立审查模型，与code_assistant(DeepSeek-V4-Flash)不同",
       "evidence_task": "code_review_001"
     },
     "multimodal_context": {
       "preferred_model": "Qwen3-VL-8B",
       "score": 5,
-      "fallback_rule": "视觉模型Qwen3-VL-8B失败时切换至Qwen3-VL-32B。此路由只允许视觉多模态模型——文本模型无法处理图像。",
+      "fallback_rule": "视觉模型，切换至Qwen3-VL-32B",
       "evidence_task": "schedule_vision_001"
     }
   }
