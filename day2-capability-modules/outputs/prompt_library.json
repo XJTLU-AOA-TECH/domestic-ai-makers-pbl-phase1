@@ -1,0 +1,55 @@
+{
+  "generated_at": "2026-06-22T14:31:29",
+  "router_source": "Day1 模型能力评估与路由包",
+  "prompts": [
+    {
+      "id": "system_team_collaborator",
+      "type": "system",
+      "preferred_model": "DeepSeek-V3.2",
+      "template": "你是TeamFlow团队协作AI助手。输出必须结构化、可执行，用JSON或表格格式。不编造信息。",
+      "teaches": "系统提示词：定义角色边界和输出纪律"
+    },
+    {
+      "id": "assign_team_tasks",
+      "type": "task",
+      "preferred_model": "DeepSeek-V3.2",
+      "template": "根据成员技能和空闲时间，分配具体任务，输出包含：任务描述、负责人、工时、截止日、风险提示。",
+      "teaches": "任务编排：把模糊需求变成可执行分配表"
+    },
+    {
+      "id": "coordinate_meetings",
+      "type": "task",
+      "preferred_model": "Qwen3-VL-8B",
+      "template": "在多人时间约束下寻找最优会议方案，满足全员会议和分组会议需求，避免晚间和周末。",
+      "teaches": "约束优化：多变量日程协调"
+    },
+    {
+      "id": "review_code_security",
+      "type": "task",
+      "preferred_model": "DeepSeek-V4-Flash",
+      "template": "审查代码安全和质量问题：SQL注入、敏感信息暴露、资源泄漏、debug模式。给出逐条修复方案。",
+      "teaches": "代码审查：从安全视角审视工程代码"
+    },
+    {
+      "id": "extract_schedule_image",
+      "type": "task",
+      "preferred_model": "Qwen3-VL-8B",
+      "template": "从日程表图片中提取所有条目，输出JSON：type、entries[{day,time,event,category}]、conflicts。",
+      "teaches": "多模态上下文：图像→结构化数据"
+    },
+    {
+      "id": "repair_json",
+      "type": "repair",
+      "preferred_model": "DeepSeek-V4-Flash",
+      "template": "修复不可解析的JSON输出，只返回修复后的JSON，不添加解释文字。",
+      "teaches": "容错：处理模型输出格式漂移"
+    },
+    {
+      "id": "agent_handoff_prompt",
+      "type": "handoff",
+      "preferred_model": "DeepSeek-V4-Flash",
+      "template": "把TeamFlow的4个能力描述为Day3 Agent可调用的动作：输入、输出、写入路径。",
+      "teaches": "AI工程接口：能力→动作→合约"
+    }
+  ]
+}

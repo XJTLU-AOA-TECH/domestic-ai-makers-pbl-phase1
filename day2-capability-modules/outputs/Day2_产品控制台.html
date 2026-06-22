@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Day2 TeamFlow 产品控制台</title>
+<style>
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:#f6f7f9;color:#17202a;line-height:1.55}
+header{background:linear-gradient(135deg,#243746,#0f766e);color:white;padding:30px 38px} header h1{margin:0 0 8px;font-size:28px} header p{margin:0;color:#dbe4ea}
+main{max-width:1180px;margin:24px auto 48px;padding:0 20px} .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.panel{background:white;border:1px solid #d8dee6;border-radius:10px;padding:18px;margin:14px 0} .kpi{font-size:28px;font-weight:760;color:#0f766e} .muted{color:#667789}
+.mini{border:1px solid #d8dee6;background:#fbfcfd;border-radius:8px;padding:12px;margin:8px 0}
+table{width:100%;border-collapse:collapse;font-size:14px} td,th{border:1px solid #d8dee6;padding:9px;text-align:left} th{background:#f0f2f5}
+a{color:#0f766e;font-weight:650} @media(max-width:900px){.grid{grid-template-columns:1fr}}
+</style></head>
+<body>
+<header><h1>Day2 TeamFlow 产品控制台</h1><p>基于Day1模型路由结果，把Prompt Engineering、结构化输出、多模态上下文抽取封装为Day3可调用的团队协作能力模块</p></header>
+<main>
+<div class="grid">
+  <div class="panel"><div class="kpi">7</div><div class="muted">提示词资产</div></div>
+  <div class="panel"><div class="kpi">3</div><div class="muted">JSON Schemas</div></div>
+  <div class="panel"><div class="kpi">4</div><div class="muted">评测用例</div></div>
+  <div class="panel"><div class="kpi">4</div><div class="muted">Agent动作</div></div>
+</div>
+<div class="panel"><h2>Day1 模型路由</h2><table><tr><th>Router Key</th><th>优先模型</th><th>评分</th></tr><tr><td>product_planner</td><td>DeepSeek-V3.2</td><td>4/5</td></tr><tr><td>context_designer</td><td>Qwen3-VL-8B</td><td>4/5</td></tr><tr><td>schema_generator</td><td>DeepSeek-V4-Flash</td><td>4/5</td></tr><tr><td>code_assistant</td><td>DeepSeek-V4-Flash</td><td>5/5</td></tr><tr><td>risk_checker</td><td>Qwen3-VL-8B</td><td>4/5</td></tr><tr><td>multimodal_context</td><td>Qwen3-VL-8B</td><td>5/5</td></tr></table></div>
+<div class="panel"><h2>Prompt Library</h2><table><tr><th>ID</th><th>类型</th><th>路由模型</th><th>学习点</th></tr><tr><td>system_team_collaborator</td><td>system</td><td>DeepSeek-V3.2</td><td>系统提示词：定义角色边界和输出纪律</td></tr><tr><td>assign_team_tasks</td><td>task</td><td>DeepSeek-V3.2</td><td>任务编排：把模糊需求变成可执行分配表</td></tr><tr><td>coordinate_meetings</td><td>task</td><td>Qwen3-VL-8B</td><td>约束优化：多变量日程协调</td></tr><tr><td>review_code_security</td><td>task</td><td>DeepSeek-V4-Flash</td><td>代码审查：从安全视角审视工程代码</td></tr><tr><td>extract_schedule_image</td><td>task</td><td>Qwen3-VL-8B</td><td>多模态上下文：图像→结构化数据</td></tr><tr><td>repair_json</td><td>repair</td><td>DeepSeek-V4-Flash</td><td>容错：处理模型输出格式漂移</td></tr><tr><td>agent_handoff_prompt</td><td>handoff</td><td>DeepSeek-V4-Flash</td><td>AI工程接口：能力→动作→合约</td></tr></table></div>
+<div class="panel"><h2>Day3 Agent Handoff（4个动作）</h2><table><tr><th>动作名</th><th>输入</th><th>输出</th><th>写入路径</th></tr><tr><td>generate_review_cards</td><td>team_context: members/skills/deadline</td><td>task_card[]</td><td>cards/task_cards.json</td></tr><tr><td>grade_answer</td><td>code_snippet + review_criteria</td><td>code_review_result</td><td>evidence/code_review.json</td></tr><tr><td>extract_multimodal_context</td><td>input_type + schedule_image</td><td>multimodal_observation</td><td>knowledge/schedule_context.json</td></tr><tr><td>prepare_device_reply</td><td>intent + latest_agent_state</td><td>short_text</td><td>latest_device_reply.txt</td></tr></table></div>
+<div class="panel"><h2>评测用例</h2><div class='mini'><b>eval_task_card_schema</b><p>生成task_card数组，字段完整(task_title/assignee/hours/deadline/risk)</p><em>PASS</em></div><div class='mini'><b>eval_code_review_sql_injection</b><p>识别SQL注入、debug模式、资源泄漏，给出修复代码</p><em>PASS</em></div><div class='mini'><b>eval_schedule_image_ocr</b><p>输出schedule_type+entries数组，提取时间+事件</p><em>PASS</em></div><div class='mini'><b>eval_meeting_constraints</b><p>全员会+分组会+评审会，避免晚9点和周末</p><em>PASS</em></div></div>
+<div class="panel"><h2>文件索引</h2><p style="line-height:2.2">
+<a href="prompt_library.json">prompt_library.json</a> |
+<a href="context_pack/day1_model_brief.json">day1_model_brief.json</a> |
+<a href="schemas/review_card.schema.json">schemas/</a> |
+<a href="eval_cases.json">eval_cases.json</a> |
+<a href="agent_handoff/day2_agent_contract.json">day2_agent_contract.json</a>
+</p></div>
+</main></body></html>

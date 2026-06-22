@@ -1,0 +1,23 @@
+{
+  "type": "object",
+  "required": [
+    "engine_name",
+    "actions",
+    "files",
+    "day3_contract"
+  ],
+  "properties": {
+    "engine_name": {
+      "type": "string"
+    },
+    "actions": {
+      "type": "array"
+    },
+    "files": {
+      "type": "object"
+    },
+    "day3_contract": {
+      "type": "object"
+    }
+  }
+}
