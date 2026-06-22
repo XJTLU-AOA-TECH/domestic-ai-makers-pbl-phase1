@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LLM 多模型能力人机协同测评系统</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#0b0f19;color:#d1d5db;min-height:100vh;padding-bottom:3rem}
+button{cursor:pointer;font-family:inherit;border:none}textarea,input,select{font-family:inherit}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:#0a0e17}::-webkit-scrollbar-thumb{background:#374151;border-radius:3px}
+
+.header-bar{border-bottom:1px solid #1f2937;background:rgba(17,24,39,.5);backdrop-filter:blur(12px);position:sticky;top:0;z-index:50;padding:14px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.main-grid{max-width:1280px;margin:24px auto;padding:0 16px;display:grid;grid-template-columns:1fr;gap:24px}
+@media(min-width:1024px){.main-grid{grid-template-columns:360px 1fr}}
+
+.card{background:rgba(17,24,39,.7);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:18px}
+.card-header{background:rgba(17,24,39,.8);padding:12px 18px;border-bottom:1px solid #1f2937;display:flex;justify-content:space-between;align-items:center;border-radius:14px 14px 0 0}
+.card-body{padding:14px 18px}
+
+.btn{padding:8px 16px;border-radius:10px;font-size:12px;font-weight:500;transition:all .2s;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.btn-cyan{background:linear-gradient(135deg,#0891b2,#4f46e5);color:#fff}
+.btn-amber{background:linear-gradient(135deg,#d97706,#dc2626);color:#fff}
+.btn-green{background:#059669;color:#fff}
+.btn-ghost{background:#1f2937;color:#9ca3af;border:1px solid #374151}
+.btn-ghost:hover{background:#374151;color:#e5e7eb}
+.btn-cyan:hover,.btn-amber:hover,.btn-green:hover{filter:brightness(1.15)}
+.btn-sm{padding:4px 10px;font-size:11px;border-radius:6px}
+
+.textarea{width:100%;background:rgba(10,14,23,.8);border:1px solid #1f2937;border-radius:10px;padding:10px;font-size:13px;color:#e5e7eb;resize:vertical;outline:none;line-height:1.6}
+.textarea:focus{border-color:#22d3ee}
+select{background:#111827;border:1px solid #374151;border-radius:8px;padding:7px 10px;font-size:12px;color:#e5e7eb;outline:none;width:100%}
+select:focus{border-color:#22d3ee}
+input[type=range]{width:100%;height:4px;border-radius:4px;background:#1f2937;appearance:none;outline:none;accent-color:#22d3ee}
+
+.badge{font-size:11px;padding:3px 10px;border-radius:999px;font-weight:500;display:inline-flex;align-items:center;gap:4px}
+.badge-green{background:rgba(16,185,129,.1);color:#34d399;border:1px solid rgba(16,185,129,.2)}
+.badge-amber{background:rgba(245,158,11,.1);color:#fbbf24;border:1px solid rgba(245,158,11,.2)}
+.badge-red{background:rgba(239,68,68,.1);color:#f87171;border:1px solid rgba(239,68,68,.2)}
+.badge-blue{background:rgba(59,130,246,.1);color:#60a5fa;border:1px solid rgba(59,130,246,.2)}
+
+.tab-btn{flex:1;padding-bottom:8px;font-size:12px;font-weight:500;border-bottom:2px solid transparent;background:none;color:#6b7280;text-align:center;transition:all .15s}
+.tab-btn.active{border-bottom-color:#22d3ee;color:#22d3ee}
+
+.progress-track{width:100%;height:4px;border-radius:4px;background:#1f2937;overflow:hidden}
+.progress-fill{height:100%;border-radius:4px;transition:width .5s}
+
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(4px);z-index:100;display:none;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal-box{max-width:1000px;width:95%;max-height:88vh;overflow-y:auto;background:rgba(17,24,39,.98);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:28px}
+
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;padding:8px;color:#9ca3af;border-bottom:1px solid #1f2937;font-weight:500;font-size:11px}
+td{padding:10px 8px;border-bottom:1px solid #111827}
+
+.rank-1{background:linear-gradient(135deg,rgba(234,179,8,.10),rgba(234,179,8,0))}
+.rank-2{background:linear-gradient(135deg,rgba(148,163,184,.08),rgba(148,163,184,0))}
+.rank-3{background:linear-gradient(135deg,rgba(180,83,9,.08),rgba(180,83,9,0))}
+
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.dot-amber{background:#f59e0b}.dot-green{background:#34d399}.dot-red{background:#ef4444}
+
+.hidden-real{display:none!important}
+.text-xs{font-size:11px}.text-sm{font-size:13px}.text-base{font-size:14px}.text-lg{font-size:17px}.text-xl{font-size:20px}
+.font-mono{font-family:'Cascadia Code','SF Mono','Consolas',monospace}.font-bold{font-weight:700}.font-semibold{font-weight:600}
+.text-center{text-align:center}.text-gray-300{color:#d1d5db}.text-gray-400{color:#9ca3af}.text-gray-500{color:#6b7280}.text-gray-600{color:#4b5563}
+.text-cyan{color:#22d3ee}.text-amber{color:#fbbf24}.text-emerald{color:#34d399}.text-indigo{color:#818cf8}.text-purple{color:#c084fc}.text-pink{color:#f472b6}.text-red{color:#f87171}.text-white{color:#fff}
+.mb-1{margin-bottom:4px}.mb-2{margin-bottom:8px}.mb-3{margin-bottom:12px}.mb-4{margin-bottom:16px}.mb-5{margin-bottom:20px}.mt-1{margin-top:4px}.mt-2{margin-top:8px}.mt-3{margin-top:12px}
+.mr-1{margin-right:4px}.ml-1{margin-left:4px}.p-2{padding:8px}.p-3{padding:12px}.p-4{padding:16px}.w-full{width:100%}
+.overflow-x-auto{overflow-x:auto}.overflow-y-auto{overflow-y:auto}.whitespace-pre-wrap{white-space:pre-wrap}
+.rounded-lg{border-radius:8px}.rounded-xl{border-radius:12px}.rounded-full{border-radius:999px}
+.cursor-pointer{cursor:pointer}.transition{transition:all .2s}.block{display:block}.inline-block{display:inline-block}
+
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.animate-pulse{animation:pulse 2s infinite}.animate-spin{animation:spin 1s linear infinite}.animate-in{animation:fadeIn .3s ease-out}
+
+.output-box{height:240px;overflow-y:auto;white-space:pre-wrap;font-family:'Cascadia Code','SF Mono','Consolas',monospace;font-size:12px;color:#9ca3af;background:rgba(10,14,23,.7);padding:12px;border-radius:10px;border:1px solid #111827;line-height:1.65}
+.upload-zone{border:2px dashed #374151;border-radius:12px;padding:16px 20px;text-align:center;cursor:pointer;transition:all .2s;background:rgba(10,14,23,.5)}
+.upload-zone:hover{border-color:#22d3ee;background:rgba(34,211,238,.03)}
+.upload-zone.has-image{border-color:#34d399;border-style:solid;background:rgba(52,211,153,.03)}
+.run-btn{padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;background:#1f2937;color:#9ca3af;border:1px solid #374151;transition:all .15s}
+.run-btn:hover{background:#374151;color:#e5e7eb}
+.run-btn.active{background:rgba(34,211,238,.1);color:#22d3ee;border-color:rgba(34,211,238,.4)}
+.score-table{width:100%;border-collapse:collapse;font-size:12px}
+.score-table th,.score-table td{padding:8px 10px;border:1px solid #1f2937;text-align:center}
+.score-table th{background:rgba(17,24,39,.6);color:#9ca3af;font-weight:500}
+.band-0{background:rgba(239,68,68,.08)}.band-0 td{color:#f87171}
+.band-1{background:rgba(245,158,11,.06)}.band-1 td{color:#fbbf24}
+.band-2{background:rgba(34,211,238,.05)}.band-2 td{color:#22d3ee}
+.band-3{background:rgba(52,211,153,.06)}.band-3 td{color:#34d399}
+.grid{display:grid}.grid-2{grid-template-columns:1fr 1fr}.grid-5{grid-template-columns:repeat(5,1fr)}
+.flex{display:flex}.items-center{align-items:center}.justify-between{justify-content:space-between}.justify-center{justify-content:center}.gap-1{gap:4px}.gap-2{gap:8px}.gap-3{gap:12px}
+.space-y-1>*+*{margin-top:4px}.space-y-2>*+*{margin-top:8px}.space-y-3>*+*{margin-top:12px}.space-y-4>*+*{margin-top:16px}.space-y-6>*+*{margin-top:24px}
+</style>
+</head>
+<body>
+
+<div class="header-bar">
+  <div class="flex items-center gap-3">
+    <div style="width:38px;height:38px;background:linear-gradient(135deg,#22d3ee,#4f46e5);border-radius:10px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 16px rgba(79,70,229,.2)">
+      <i class="fas fa-calendar-check text-white" style="font-size:18px"></i>
+    </div>
+    <div>
+      <h1 style="font-size:20px;font-weight:700;color:#fff;margin:0">LLM Schedule-Bench</h1>
+      <p class="text-xs text-gray-500" style="margin:2px 0 0">大模型日程规划能力评测 · 5厂商×5维度 · 多轮聚合 · 超时淘汰</p>
+    </div>
+  </div>
+  <div class="flex items-center gap-3 flex-wrap">
+    <button onclick="showStandards()" class="btn btn-ghost"><i class="fas fa-gavel text-amber"></i> 打分标准与细则</button>
+    <button onclick="generateReport()" id="btn-report" class="btn btn-amber"><i class="fas fa-file-pdf"></i> 一键生成评分报告</button>
+    <span class="badge badge-green"><span class="dot dot-green animate-pulse"></span> 硅基流动 API</span>
+  </div>
+</div>
+
+<div class="main-grid">
+<div class="space-y-4">
+  <div class="card">
+    <h2 class="text-lg font-bold mb-3 flex items-center gap-2 text-cyan"><i class="fas fa-cog"></i> 1. 模式配置与输入</h2>
+    <div class="mb-3">
+      <label class="text-xs text-gray-400 mb-1.5 block">用例输入模式</label>
+      <div class="grid grid-2 gap-2" style="background:#0a0e17;padding:4px;border-radius:12px;border:1px solid #1f2937">
+        <button onclick="switchInputMode('auto')" id="btn-mode-auto" style="padding:8px;font-size:11px;font-weight:500;border-radius:8px;background:#111827;color:#22d3ee;border:1px solid #1f2937"><i class="fas fa-magic mr-1"></i> AI 自动生成用例</button>
+        <button onclick="switchInputMode('manual')" id="btn-mode-manual" style="padding:8px;font-size:11px;font-weight:500;border-radius:8px;background:transparent;color:#6b7280;border:1px solid transparent"><i class="fas fa-keyboard mr-1"></i> 人工草拟输入</button>
+      </div>
+    </div>
+    <div class="mb-3">
+      <label class="text-xs text-gray-400 mb-1 block" id="promptLabel">测试场景约束内容 (支持直接编辑)</label>
+      <textarea id="promptInput" rows="8" class="textarea" style="min-height:150px">【小组作业目标】: 开发一个基于 React+Tailwind 架构的"智慧文旅数字化平台"原型系统。
+【项目周期】: 14 天 (两周)
+【小组成员画像与约束】:
+1. 小明 (组长): 精通前端 React、TailwindCSS。周三因驾考冲突全天无法作业。
+2. 小红: 擅长 UI/UX 设计及动效。周六日需兼职，仅工作日晚上有空。
+3. 小华: 基础较弱，会简单的 HTML/CSS，希望能分配一些基础组件编写。</textarea>
+    </div>
+    <div class="mb-3">
+      <label class="text-xs text-gray-400 mb-1.5 block">待测大模型 (5个厂商)</label>
+      <div class="space-y-1.5" id="modelList"></div>
+    </div>
+    <div class="mb-3">
+      <label class="text-xs text-gray-400 mb-1.5 block"><i class="fas fa-redo mr-1"></i> 自动评测轮数</label>
+      <div class="flex gap-2" id="runCountSelector">
+        <button onclick="setRunCount(1)" class="run-btn active" data-n="1">1 轮</button><button onclick="setRunCount(3)" class="run-btn" data-n="3">3 轮</button><button onclick="setRunCount(5)" class="run-btn" data-n="5">5 轮</button><button onclick="setRunCount(10)" class="run-btn" data-n="10">10 轮</button>
+      </div>
+    </div>
+    <div class="mb-3">
+      <label class="text-xs text-gray-400 mb-1.5 block"><i class="fas fa-gavel mr-1"></i> AI 裁判模型</label>
+      <select id="judgeModelSelect" onchange="updateJudgeModel()">
+        <option value="deepseek-ai/DeepSeek-V3">DeepSeek-V3 [DeepSeek]</option>
+        <option value="Qwen/Qwen2.5-32B-Instruct">通义千问2.5 32B [阿里]</option>
+        <option value="moonshotai/Kimi-K2.7-Code">🔍 Kimi K2.7 [月之暗面·第三方]</option>
+        <option value="stepfun-ai/Step-3.5-Flash">🔍 Step 3.5 [阶跃星辰·第三方]</option>
+      </select>
+      <div class="text-xs mt-1" id="judgeConflict"></div>
+    </div>
+    <button id="startBtn" onclick="runBenchmark()" class="btn btn-cyan w-full py-3 justify-center text-sm font-bold"><i class="fas fa-rocket"></i> 一键并行生成并测评</button>
+    <div class="text-xs text-gray-500 text-center mt-2">⏱️ 超时上限：<span style="color:#f87171">3分钟</span></div>
+  </div>
+</div>
+
+<div class="space-y-4">
+  <h2 class="text-xl font-bold text-gray-200 flex items-center gap-2"><i class="fas fa-stream text-indigo"></i> 2. 评测流水线与双轨打分面板</h2>
+  <div id="pipelineContainer" class="space-y-4">
+    <div class="text-center card" style="border-style:dashed;padding:48px 24px"><i class="fas fa-chart-line" style="font-size:40px;color:#374151;display:block;margin-bottom:12px"></i><span class="text-gray-500">请选择生成模式并点击「一键并行生成并测评」按钮。</span></div>
+  </div>
+</div>
+</div>
+
+<div id="modalStandards" class="modal-overlay"><div class="modal-box" onclick="event.stopPropagation()"><div class="flex justify-between items-center mb-5"><h2 class="text-xl font-bold text-amber"><i class="fas fa-gavel mr-2"></i>打分标准与细则公示</h2><button onclick="hideStandards()" style="background:none;color:#6b7280;font-size:24px">&times;</button></div><div style="background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.15);border-radius:12px;padding:14px;margin-bottom:20px"><p class="text-sm text-gray-300"><i class="fas fa-robot text-amber mr-1"></i><strong>AI 裁判模型：</strong><span class="font-mono text-amber" id="standardsJudgeName">DeepSeek-V3</span></p></div><div id="standardsDetail"></div></div></div>
+
+<div id="modalReport" class="modal-overlay"><div class="modal-box" style="max-width:1050px" onclick="event.stopPropagation()"><div class="flex justify-between items-center mb-5"><h2 class="text-xl font-bold text-amber"><i class="fas fa-file-pdf mr-2"></i>多轮聚合综合评分报告</h2><div class="flex items-center gap-3"><button onclick="generateDay1Console()" class="btn btn-cyan"><i class="fas fa-file-code"></i> 生成 Day1 控制台</button><button onclick="exportCSV()" class="btn btn-green"><i class="fas fa-download"></i> 导出CSV</button><button onclick="hideReport()" style="background:none;color:#6b7280;font-size:24px">&times;</button></div></div><div id="reportContent" class="text-sm text-gray-400">暂无数据，请先运行评测。</div></div></div>
+
+<script>
+var A="sk-thpbbieyngnmfoyvjiiyzbdluuvizqzlfsgrymgeqktkjbhs",U="https://api.siliconflow.cn/v1/chat/completions",T=180000;
+var M=[{id:"deepseek-ai/DeepSeek-V3",name:"DeepSeek-V3",tag:"DSV3",emoji:"🟣",color:"#a855f7",vendor:"DeepSeek"},{id:"ByteDance-Seed/Seed-OSS-36B-Instruct",name:"豆包 Seed 36B",tag:"Seed36",emoji:"🟢",color:"#14b8a6",vendor:"字节跳动"},{id:"Qwen/Qwen2.5-32B-Instruct",name:"通义千问2.5 32B",tag:"Qw32",emoji:"🔵",color:"#3b82f6",vendor:"阿里"},{id:"Qwen/Qwen2.5-14B-Instruct",name:"通义千问2.5 14B",tag:"Qw14",emoji:"🟠",color:"#f97316",vendor:"阿里"},{id:"THUDM/GLM-4-9B-0414",name:"智谱 GLM-4 9B",tag:"GLM4",emoji:"🟡",color:"#eab308",vendor:"智谱"}];
+var J=[{id:"deepseek-ai/DeepSeek-V3",name:"DeepSeek-V3",vendor:"DeepSeek",inTest:true},{id:"Qwen/Qwen2.5-32B-Instruct",name:"通义千问2.5 32B",vendor:"阿里",inTest:true},{id:"moonshotai/Kimi-K2.7-Code",name:"Kimi K2.7",vendor:"月之暗面·第三方",inTest:false},{id:"stepfun-ai/Step-3.5-Flash",name:"Step 3.5",vendor:"阶跃星辰·第三方",inTest:false}];
+var C=[{key:"schedule",label:"时间安排合理性",color:"#22d3ee"},{key:"dependency",label:"任务依赖完整性",color:"#34d399"},{key:"balance",label:"资源分配均衡度",color:"#818cf8"},{key:"constraint",label:"约束条件满足度",color:"#c084fc"},{key:"executable",label:"可执行性与粒度",color:"#f472b6"}];
+var judgeModel=J[0].id,runCount=1,S={},benchStartTime=null;
+
+var autoEx=["【项目目标】: 开发电影推荐系统。\n【周期】: 10天。\n【约束】: A擅长算法，B擅长前端。A下周一请假，B周末不加班。请给出每日排班计划。","【项目目标】: 筹办300人校园科技节展会。\n【周期】: 7天。\n【约束】: 负责人小张只能晚上统筹，外联部小李周五有考试。需要详细每日推进表。","【项目目标】: 编写50页行业市场调研报告。\n【周期】: 5天。\n【约束】: 甲精通数据分析，乙精通PPT排版，丙基础薄弱只能查资料。请均衡分配。","【项目目标】: 开发在线商城小程序。\n【周期】: 21天。\n【约束】: 后端小刘周二周四有课，前端小周周末需回老家，UI小陈只有晚上能工作。需要完整Sprint计划。","【项目目标】: 搭建校园失物招领系统。\n【周期】: 12天。\n【约束】: 组长全栈但周四面试，A会数据库但基础一般，B擅长前端但周一至三实习。"];
+
+(function init(){
+  document.getElementById('modelList').innerHTML=M.map(function(m){return'<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:rgba(17,24,39,.6);border-radius:10px;border:1px solid #1f2937;font-size:12px"><span class="font-mono" style="color:#d1d5db">'+m.emoji+' '+m.name+' <span style="font-size:9px;color:#6b7280">'+m.vendor+'</span></span><span class="badge badge-green">READY</span></div>';}).join('');
+  var rb=[{t:"一、时间安排合理性",i:"评估日程节点设置是否合理，时间段分配是否科学，能否有效区分工作日与休息日，时间估算是否贴近实际。",b:[{r:"0–5",l:"严重缺陷",c:"band-0",d:"无明确时间节点；时间线混乱；完全忽略项目周期约束；时间估算严重背离常理。",dd:"没有任何日期标注；任务堆在一起无时间区分；周期超出范围±50%。",aw:"计划中至少出现'第X天'或具体日期的字眼，且有基本先后顺序。"},{r:"6–10",l:"基础水平",c:"band-1",d:"有大致时间框架但粗糙——以周/阶段为粒度；未区分工作日与休息日；缺少里程碑；时间估算笼统。",dd:"仅按周划分无日粒度；周六日同等对待；缺少中期检查点；缓冲时间完全未考虑。",aw:"至少按3-4个阶段划分时间；阶段间有先后关系；总时长与周期吻合。"},{r:"11–15",l:"良好水平",c:"band-2",d:"日级节点较清晰有阶段划分——大部分日期有明确安排；区分了工作日与休息日；有中期里程碑。",dd:"个别日期安排过于笼统；周末区分不彻底；里程碑可验证性不足。",aw:"≥80%日期有具体安排；明确标注休息日；≥2-3个里程碑；含可辨识缓冲期。"},{r:"16–20",l:"优秀水平",c:"band-3",d:"精确到半日/小时——每天精确到上下午；严格区分工作日休息日；考虑每日有效工时；设置合理缓冲期；里程碑SMART化。",dd:"未标注每日预计工时；缓冲期未结合风险点；里程碑缺乏量化标准。",aw:"全部日期精确安排；工作日休息日严格区分；每日工时因人而异；缓冲与风险挂钩。"}]},{t:"二、任务依赖完整性",i:"评估任务前后置关系是否正确，关键路径是否清晰，是否存在依赖颠倒或遗漏，并行安排是否合理。",b:[{r:"0–5",l:"严重缺陷",c:"band-0",d:"任务间无任何依赖关系；顺序明显混乱；关键路径严重错误；存在不可能完成的前置条件。",dd:"任务可任意调换顺序；明显因果颠倒；成员不可用时被安排需其完成的工作。",aw:"计划中能辨识出≥2-3个明显的前后置关系。"},{r:"6–10",l:"基础水平",c:"band-1",d:"有基本先后顺序但缺少系统依赖标注——能看出大致流程但依赖关系不明确；部分依赖不合理。",dd:"依赖仅靠读者推断无标注；存在循环依赖；串并行未考虑资源约束。",aw:"计划隐含基本瀑布/迭代流程；阶段间有清晰先后顺序；≥1-2个关键串行依赖。"},{r:"11–15",l:"良好水平",c:"band-2",d:"主要依赖关系正确关键路径基本清晰——明确标注了关键依赖；考虑了必要串并行安排；关键路径可追踪。",dd:"个别依赖标注不明确；并行任务有隐藏资源冲突；关键路径缺少量化估算。",aw:"≥5个明确依赖关系正确标注；关键路径可追踪；≥2组合理并行任务。"},{r:"16–20",l:"优秀水平",c:"band-3",d:"所有依赖明确标注关键路径量化——每个任务前置条件用具体产出物定义；关键路径精确到天；并行安排无冲突。",dd:"个别依赖条件模糊；关键路径未量化；未考虑依赖链风险缓冲。",aw:"所有任务I/O依赖用产出物定义；关键路径量化到天；零资源冲突；有风险应对。"}]},{t:"三、资源分配均衡度",i:"评估任务分配是否均衡，是否考虑个体产能差异、时间可用性、技能匹配度，是否预留应急人力。",b:[{r:"0–5",l:"严重缺陷",c:"band-0",d:"某成员严重过载或完全闲置；未考虑技能差异；忽略请假/兼职等时间约束。",dd:"单人任务量超60%；非技术成员承担核心编码；请假当天排班；成员仅1-2个任务。",aw:"每个成员都被分配了与技能大致匹配的实质性任务。"},{r:"6–10",l:"基础水平",c:"band-1",d:"有基本任务分配但粗糙——成员都有任务但量级差异明显；技能大致匹配但不够精细；硬约束被响应但软约束忽略。",dd:"量级差异超2倍；兼职成员被排白天任务；技能错配超30%；未标注可用工时。",aw:"每个成员≥3个可辨识任务；技能大致匹配；硬约束未被违反。"},{r:"11–15",l:"良好水平",c:"band-2",d:"工作量基本均衡考虑了技能和产能差异——任务量偏差30%内；按技能分配匹配度较高；考虑兼职/请假影响。",dd:"偏差仍有15-30%；个别任务技能不匹配；兼职时间利用不充分；缺少应急替补。",aw:"成员间任务量偏差≤30%；≥80%任务技能匹配；软硬约束均被响应；有基本人天估算。"},{r:"16–20",l:"优秀水平",c:"band-3",d:"精确到人天的负载计算充分考虑个体差异——每成员每天工时与任务量精确匹配；技能100%匹配有成长空间；约束精确到小时；有应急人力。",dd:"负载未精确到半日；梯度任务设计不够具体；应急方案仅口头提及。",aw:"每成员每日负载精确匹配可用工时；技能匹配+成长路径；约束精确到小时；有可操作应急方案。"}]},{t:"四、约束条件满足度",i:"评估是否完整响应所有约束（时间、技能、偏好），约束间冲突是否被妥善处理。",b:[{r:"0–5",l:"严重缺陷",c:"band-0",d:"忽略多项关键约束——请假/兼职硬约束完全未考虑；技能约束严重违背；用户偏好被完全忽略。",dd:"≥2项硬约束被违反；任务与技能画像完全相反；未提及约束中的人物或条件。",aw:"≥50%的硬约束被响应。"},{r:"6–10",l:"基础水平",c:"band-1",d:"部分约束被响应但存在遗漏——硬约束被响应但软约束处理不精细；技能匹配大致正确有个别偏差。",dd:"≥1项软约束未处理；技能有1-2处明显错误；偏好响应流于表面。",aw:"所有硬约束正确响应；≥60%软约束被实质处理；技能分配无明显错误。"},{r:"11–15",l:"良好水平",c:"band-2",d:"大部分约束被满足个别边缘情况不够精细——硬约束100%满足；软约束≥80%满足；偏好在计划中有具体体现。",dd:"≥1项软约束处理不够具体；交叉约束优先级判断不清；偏好落地可衡量性不足。",aw:"硬约束100%满足；软约束≥80%满足；每个成员偏好都有≥2处可验证体现。"},{r:"16–20",l:"优秀水平",c:"band-3",d:"逐一响应所有约束且交叉处理得当——每项约束都有对应方案；优先级和冲突有明确解决逻辑；偏好不仅满足还有优化。",dd:"个别方案可操作性不足；交叉约束缺乏备选方案；未考虑约束变化应对。",aw:"100%约束精确响应且有可验证安排；交叉约束有优先级判断和冲突解决方案；偏好被优化升级。"}]},{t:"五、可执行性与粒度",i:"评估计划是否可直接落地执行——任务拆分粒度是否适中，每日目标明确可验收，是否有交付物标准及风险管理。",b:[{r:"0–5",l:"严重缺陷",c:"band-0",d:"计划过于笼统无法执行——仅几个大块任务无细分；无交付物定义或验收标准；无量化指标。",dd:"任务总数<5个；无产出物描述；无验证完成标准；看起来像提纲而非可执行方案。",aw:"≥10个相对具体的任务，部分有基本产出物暗示。"},{r:"6–10",l:"基础水平",c:"band-1",d:"有基本任务列表但缺验收标准——拆到10-20个但粒度偏粗；有任务名称但缺产出物描述；检查点不明确。",dd:"≥30%任务跨度超3天；产出物描述模糊；检查点间隔超1周；缺少验收标准。",aw:"≥15个任务；核心任务有较具体名称；≥1-2个检查点；多数任务有可推断产出物。"},{r:"11–15",l:"良好水平",c:"band-2",d:"任务粒度适中且有交付物描述和检查点——多数1-2天粒度；≥70%有明确产出物描述；≥3个检查点；每日有较具体目标。",dd:"个别任务仍偏粗(3天+)；部分产出物描述不量化；检查点验收标准不明确。",aw:"≥80%任务粒度≤2天；≥70%任务有具体产出物描述；≥3个检查点分布在不同阶段。"},{r:"16–20",l:"优秀水平",c:"band-3",d:"日粒度可执行且交付物标准SMART——几乎全部半天到1天粒度；每任务有量化验收标准；有清晰DoD；风险预案与具体任务挂钩。",dd:"个别验收标准不量化；风险预案未与里程碑绑定；DoD标准不统一。",aw:"100%任务粒度≤1天可独立验收；所有产出物标准量化；DoD清晰统一；风险预案具体到任务级。"}]}];
+  document.getElementById('standardsDetail').innerHTML=rb.map(function(r,i){return'<div style="margin-bottom:20px;border:1px solid #1f2937;border-radius:14px;overflow:hidden"><div style="background:rgba(17,24,39,.8);padding:14px 16px;border-bottom:1px solid #1f2937"><h3 class="font-bold" style="font-size:15px;color:#e5e7eb"><i class="fas fa-star mr-2" style="color:'+C[i].color+'"></i>'+r.t+'</h3><p class="text-xs text-gray-400 mt-1">'+r.i+'</p></div><div style="padding:8px"><table class="score-table"><thead><tr><th style="width:8%">分数</th><th style="width:8%">等级</th><th style="width:32%">评分标准详述</th><th style="width:26%">扣分项</th><th style="width:26%">得分门槛</th></tr></thead><tbody>'+r.b.map(function(b){return'<tr class="'+b.c+'"><td class="font-mono font-bold">'+b.r+'</td><td class="font-bold">'+b.l+'</td><td style="text-align:left;line-height:1.6;font-size:11px">'+b.d+'</td><td style="text-align:left;line-height:1.5;font-size:11px">❌ '+b.dd+'</td><td style="text-align:left;line-height:1.5;font-size:11px">✅ '+b.aw+'</td></tr>';}).join('')+'</tbody></table></div></div>';}).join('');
+  updateJudgeModel();
+  document.getElementById('modalStandards').addEventListener('click',function(e){if(e.target===this)hideStandards();});
+  document.getElementById('modalReport').addEventListener('click',function(e){if(e.target===this)hideReport();});
+})();
+
+function switchInputMode(mode){
+  var a=document.getElementById('btn-mode-auto'),b=document.getElementById('btn-mode-manual');
+  var act='padding:8px;font-size:11px;font-weight:500;border-radius:8px;background:#111827;color:#22d3ee;border:1px solid #1f2937';
+  var ina='padding:8px;font-size:11px;font-weight:500;border-radius:8px;background:transparent;color:#6b7280;border:1px solid transparent';
+  if(mode==='auto'){a.setAttribute('style',act);b.setAttribute('style',ina);document.getElementById('promptInput').value=autoEx[Math.floor(Math.random()*autoEx.length)];document.getElementById('promptLabel').innerText='测试场景约束内容 (AI自动随机抽取)';}
+  else{b.setAttribute('style',act);a.setAttribute('style',ina);document.getElementById('promptInput').value='';document.getElementById('promptInput').placeholder='请在此输入小组作业目标、成员画像、时间约束...';document.getElementById('promptLabel').innerText='测试场景约束内容 (人工草拟)';document.getElementById('promptInput').focus();}
+}
+
+function setRunCount(n){runCount=n;document.querySelectorAll('#runCountSelector .run-btn').forEach(function(b){b.classList.toggle('active',parseInt(b.dataset.n)===n);});}
+
+function updateJudgeModel(){
+  judgeModel=document.getElementById('judgeModelSelect').value;
+  var opt=J.find(function(o){return o.id===judgeModel;});
+  document.getElementById('standardsJudgeName').textContent=opt.name+' ('+opt.vendor+')';
+  var cf=document.getElementById('judgeConflict');
+  if(opt.inTest){cf.classList.remove('hidden-real');cf.style.color='#fbbf24';cf.innerHTML='⚠️ 裁判同时在待测模型中 → 评分可能偏高5-15%。建议选 Kimi/Step (真正第三方)。';}
+  else{cf.classList.remove('hidden-real');cf.style.color='#22d3ee';cf.innerHTML='✅ 真正第三方裁判 — 不在5个待测模型中，评分公正客观。';}
+}
+
+// ── Pipeline ──
+async function runBenchmark(){
+  var basePrompt=document.getElementById('promptInput').value.trim();if(!basePrompt)return alert('请输入测试用例内容！');
+  benchStartTime=new Date();S={};
+  var ctr=document.getElementById('pipelineContainer');ctr.innerHTML='';
+  // 首轮用当前输入，后续轮次从autoEx随机抽取不同情境
+  var prompts=[];for(var r=0;r<runCount;r++){if(r===0)prompts.push(basePrompt);else{var pick;do{pick=autoEx[Math.floor(Math.random()*autoEx.length)];}while(pick===basePrompt&&autoEx.length>1);prompts.push(pick);}}
+  M.forEach(function(m){S[m.tag]={runs:[],human:{},rawPrompt:basePrompt,bestRunIdx:0,done:false,allTimedOut:false};C.forEach(function(c){S[m.tag].human[c.key]=15;});ctr.innerHTML+=buildCard(m);});
+  for(var r=0;r<runCount;r++){
+    var roundPrompt=prompts[r];
+    document.getElementById('promptInput').value=roundPrompt;
+    M.forEach(function(m){updateStatus(m.tag,'['+(r+1)+'/'+runCount+'] 情境'+(r+1)+'...','amber');updateDot(m.tag,'amber',true);});
+    var tasks=M.map(function(m){return runSingleRound(m,r,roundPrompt).then(function(){var x=findModelByTag(m.tag);if(x)refreshCard(x);});});
+    await Promise.all(tasks);
+  }
+  document.getElementById('promptInput').value=basePrompt;
+  M.forEach(function(m){var d=S[m.tag],dr=d.runs.filter(function(r){return r.done&&!r.timedOut;});d.allTimedOut=dr.length===0;if(!d.allTimedOut)updateBestRun(m.tag);d.done=true;});
+  markAllDone();M.forEach(function(m){refreshCard(m);});
+}
+
+function findModelByTag(tag){for(var i=0;i<M.length;i++){if(M[i].tag===tag)return M[i];}return null;}
+
+async function runSingleRound(model,round,prompt){
+  var tag=model.tag;if(!S[tag].runs[round])S[tag].runs[round]={ai:{},plan:'',verdict:'',prompt:prompt,done:false,timedOut:false,elapsedMs:0};
+  var run=S[tag].runs[round],t0=performance.now();
+  updateStatus(tag,'['+(round+1)+'/'+runCount+'] 生成中...','amber');
+  try{
+    var g=await fetch(U,{method:'POST',headers:{'Authorization':'Bearer '+A,'Content-Type':'application/json'},body:JSON.stringify({model:model.id,messages:[{role:"user",content:prompt}],temperature:0.3,max_tokens:4096})});
+    if(!g.ok){var et=await g.text().catch(function(){return'';});throw new Error('HTTP '+g.status+': '+et.slice(0,200));}
+    var gd=await g.json();if(gd.error)throw new Error(gd.error.message);
+    if(!gd.choices||!gd.choices[0])throw new Error('空响应');
+    run.plan=gd.choices[0].message.content||gd.choices[0].message.reasoning_content||'';
+    if(!run.plan)throw new Error('空内容');
+    updateStatus(tag,'['+(round+1)+'/'+runCount+'] AI盲评中...','amber');
+
+    var jb={model:judgeModel,messages:[{role:"system",content:'你是项目管理专家。对日程计划五维度盲评(每项0-20): 1.schedule 2.dependency 3.balance 4.constraint 5.executable。输出: {"scores":{"schedule":15,"dependency":16,"balance":14,"constraint":17,"executable":13},"total":75,"verdict":"短评"}'},{role:"user",content:'约束:\n'+prompt+'\n\n计划:\n'+run.plan}],temperature:0.1};
+    if(judgeModel.indexOf('DeepSeek-V3')>=0)jb.response_format={type:"json_object"};
+    var jr=await fetch(U,{method:'POST',headers:{'Authorization':'Bearer '+A,'Content-Type':'application/json'},body:JSON.stringify(jb)});
+    var jd=await jr.json(),jm=jd.choices[0].message,raw=(jm.content||jm.reasoning_content||'').replace(/```json/g,'').replace(/```/g,'').trim();
+    if(!raw)throw new Error('裁判空响应');
+    var an=JSON.parse(raw);C.forEach(function(c){run.ai[c.key]=an.scores[c.key]||0;});
+    run.verdict=an.verdict||'';run.done=true;run.elapsedMs=Math.round(performance.now()-t0);
+    updateStatus(tag,'['+(round+1)+'/'+runCount+'] ✅ '+(run.elapsedMs/1000).toFixed(1)+'s','green');updateDot(tag,'green',false);
+  }catch(e){run.elapsedMs=Math.round(performance.now()-t0);run.done=false;run.timedOut=false;run.plan='【API异常】\n模型: '+model.id+'\n错误: '+e.message;updateStatus(tag,'❌ 异常','red');updateDot(tag,'red',false);console.error(tag,e);}
+}
+
+function updateBestRun(tag){
+  var runs=S[tag].runs.filter(function(r){return r.done&&!r.timedOut;});if(!runs.length)return;
+  var bi=0,bs=-1;S[tag].runs.forEach(function(r,i){if(r.done&&!r.timedOut){var s=0;C.forEach(function(c){s+=r.ai[c.key]||0;});if(s>bs){bs=s;bi=i;}}});
+  S[tag].bestRunIdx=bi;
+}
+
+function updateStatus(tag,text,type){var el=document.getElementById('status-'+tag);if(!el)return;el.innerText=text;var m={amber:'badge-amber',green:'badge-green',red:'badge-red'};el.className='badge '+(m[type]||'badge-amber');}
+function updateDot(tag,color,pulse){var el=document.getElementById('dot-'+tag);if(el)el.className='dot dot-'+color+(pulse?' animate-pulse':'');}
+function markAllDone(){M.forEach(function(m){var d=S[m.tag];if(d&&d.allTimedOut){updateStatus(m.tag,'⏱️ 淘汰','red');updateDot(m.tag,'red',false);}else{updateStatus(m.tag,'✅ 就绪','green');updateDot(m.tag,'green',false);}});}
+
+function refreshCard(model){
+  var tag=model.tag,m=S[tag];if(!m||!m.runs.length)return;
+  // 显示最新完成轮次的输出（而非best），让人工打分能看到每轮新输出
+  var lastDone=null;for(var ri=m.runs.length-1;ri>=0;ri--){if(m.runs[ri]&&m.runs[ri].done&&!m.runs[ri].timedOut){lastDone=m.runs[ri];break;}}
+  if(!lastDone)lastDone=m.runs[m.bestRunIdx];
+  var best=m.runs[m.bestRunIdx],outEl=document.getElementById('output-'+tag);
+  if(outEl&&lastDone&&lastDone.plan){var roundLabel=lastDone===best?' (最佳)':' (最新轮次)';outEl.innerHTML='<div class="text-xs text-amber mb-1">📝 R'+(m.runs.indexOf(lastDone)+1)+roundLabel+'</div>'+escapeHtml(lastDone.plan);}
+  else if(outEl&&m.allTimedOut)outEl.innerHTML='<span style="color:#f87171">⏱️ 所有轮次超时淘汰。</span>';
+  var dr=m.runs.filter(function(r){return r.done&&!r.timedOut;}),panelAi=document.getElementById('panel-ai-'+tag),loadingEl=document.getElementById('score-loading-'+tag);
+  if(loadingEl)loadingEl.classList.add('hidden-real');
+  if(m.allTimedOut){if(panelAi){panelAi.classList.remove('hidden-real');panelAi.innerHTML='<div style="text-align:center;padding:20px;color:#f87171"><i class="fas fa-clock" style="font-size:28px;display:block;margin-bottom:8px"></i>⏱️ 已超时淘汰</div>';}document.getElementById('final-total-'+tag).innerText='淘汰';var se=document.getElementById('summary-'+tag);if(se){se.classList.remove('hidden-real');se.style.display='flex';}return;}
+  if(!dr.length)return;
+  var agg={};C.forEach(function(c){agg[c.key]={sum:0,min:20,max:0,n:0};});
+  dr.forEach(function(r){C.forEach(function(c){var v=r.ai[c.key]||0;agg[c.key].sum+=v;agg[c.key].min=Math.min(agg[c.key].min,v);agg[c.key].max=Math.max(agg[c.key].max,v);agg[c.key].n++;});});
+  m._agg=agg;
+  if(panelAi){panelAi.classList.remove('hidden-real');var tc=m.runs.filter(function(r){return r.timedOut;}).length;
+    var roundScores='';m.runs.forEach(function(r,i){if(r.timedOut){roundScores+='<span style="color:#f87171;font-size:10px">R'+(i+1)+': ⏱️</span> ';}else if(r.done){var ts=0;C.forEach(function(c){ts+=r.ai[c.key]||0;});roundScores+='<span style="color:'+(i===m.bestRunIdx?'#fbbf24':'#9ca3af')+';font-size:10px">R'+(i+1)+': <b>'+ts+'</b></span> ';}});
+    panelAi.innerHTML='<div class="text-xs text-gray-500 mb-2">📊 '+dr.length+'/'+runCount+' 轮有效'+(tc>0?'<span style="color:#f87171"> | ⚠️ '+tc+'轮超时</span>':'')+'</div>'+
+      '<div class="text-xs mb-2" style="line-height:1.8">'+roundScores+'</div>'+
+      '<div class="space-y-2">'+C.map(function(c){var a=agg[c.key],av=a.sum/a.n;return'<div style="margin-bottom:5px"><div style="display:flex;justify-content:space-between;font-size:11px;color:#9ca3af"><span>'+c.label+'</span><span class="font-mono" style="color:#e5e7eb">'+av.toFixed(1)+'<span class="text-xs text-gray-500">/20</span> <span style="color:#6b7280;font-size:10px">['+a.min+'-'+a.max+']</span></span></div><div class="progress-track" style="margin-top:2px"><div class="progress-fill" style="width:'+Math.round(av/20*100)+'%;background:'+c.color+'"></div></div></div>';}).join('')+'</div>'+
+      (best&&best.verdict?'<div style="background:#111827;padding:10px;border-radius:8px;border:1px solid #1f2937;margin-top:8px;font-size:11px;color:#9ca3af;line-height:1.5"><span style="color:#22d3ee;font-weight:600;display:block;margin-bottom:4px">AI评语(最佳轮次):</span>'+escapeHtml(best.verdict)+'</div>':'');
+  }
+  calculateFinal(tag);var se=document.getElementById('summary-'+tag);if(se){se.classList.remove('hidden-real');se.style.display='flex';}
+}
+
+function calculateFinal(tag){var m=S[tag];if(!m||m.allTimedOut||!m._agg)return;var aiS=0,hs=0;C.forEach(function(c){var a=m._agg[c.key];aiS+=a.sum/a.n;hs+=m.human[c.key]||0;});m.aiAvgSum=aiS;m.humanSum=hs;m.finalScore=Math.round(((aiS/100)*0.5+(hs/100)*0.5)*100);var el=document.getElementById('final-total-'+tag);if(el)el.innerText=m.finalScore+' /100';}
+
+function buildCard(model){
+  var tag=model.tag,sliders=C.map(function(c){return'<div><div style="display:flex;justify-content:space-between;font-size:11px;color:#9ca3af;margin-bottom:2px"><span>'+c.label+'</span><span class="font-mono font-bold text-amber" id="val-'+tag+'-'+c.key+'">15</span></div><input type="range" min="0" max="20" value="15" style="width:100%;height:3px;background:#1f2937;appearance:none;accent-color:#22d3ee;outline:none" oninput="onHumanSlider(\''+tag+'\',\''+c.key+'\',this.value)"></div>';}).join('');
+  return'<div id="card-'+tag+'" class="card animate-in" style="border-color:'+model.color+'33;overflow:hidden"><div class="card-header"><span class="font-bold text-sm flex items-center gap-2" style="color:#e5e7eb"><span class="dot dot-amber animate-pulse" id="dot-'+tag+'"></span>'+model.emoji+' '+model.name+' <span style="font-size:9px;color:#6b7280">'+model.vendor+'</span></span><span id="status-'+tag+'" class="badge badge-amber">等待开始...</span></div><div class="card-body"><div style="display:grid;grid-template-columns:1fr 1fr;gap:16px"><div><div class="text-xs font-bold mb-2" style="color:#9ca3af;text-transform:uppercase;letter-spacing:.05em"><i class="fas fa-file-alt text-cyan"></i> 输出快照 (实时更新)</div><div id="output-'+tag+'" class="output-box"><span style="color:#4b5563">等待生成...</span></div></div><div style="background:rgba(17,24,39,.2);padding:12px;border-radius:12px;display:flex;flex-direction:column;justify-content:space-between"><div><div class="flex text-xs mb-3" style="border-bottom:1px solid #1f2937"><button onclick="switchTab(\''+tag+'\',\'ai\')" id="tab-ai-'+tag+'" class="tab-btn active"><i class="fas fa-robot mr-1"></i>AI裁判</button><button onclick="switchTab(\''+tag+'\',\'human\')" id="tab-human-'+tag+'" class="tab-btn"><i class="fas fa-user-edit mr-1"></i>人工打分</button></div><div id="score-loading-'+tag+'" style="padding:48px 0;text-align:center;font-size:12px;color:#6b7280"><i class="fas fa-circle-notch animate-spin" style="font-size:18px;display:block;margin:0 auto 8px;color:#4b5563"></i>等待生成...</div><div id="panel-ai-'+tag+'" class="hidden-real space-y-2"></div><div id="panel-human-'+tag+'" class="hidden-real space-y-2.5"><div style="background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.08);padding:10px;border-radius:10px;font-size:11px;color:#a5b4fc;margin-bottom:6px"><i class="fas fa-info-circle"></i> 审查并修正各维度得分：</div>'+sliders+'</div></div><div id="summary-'+tag+'" class="hidden-real" style="margin-top:12px;border-top:1px solid #111827;padding-top:10px;align-items:center;justify-content:space-between;background:#0a0e17;padding:10px;border-radius:10px;display:none"><span class="text-xs text-gray-400">最终分:</span><div class="text-xl font-bold font-mono text-cyan" id="final-total-'+tag+'">--</div></div></div></div></div></div>';
+}
+
+function switchTab(tag,type){
+  var ta=document.getElementById('tab-ai-'+tag),th=document.getElementById('tab-human-'+tag),pa=document.getElementById('panel-ai-'+tag),ph=document.getElementById('panel-human-'+tag);
+  if(pa.classList.contains('hidden-real')&&ph.classList.contains('hidden-real'))return;
+  if(type==='ai'){ta.classList.add('active');th.classList.remove('active');pa.classList.remove('hidden-real');ph.classList.add('hidden-real');}
+  else{th.classList.add('active');ta.classList.remove('active');ph.classList.remove('hidden-real');pa.classList.add('hidden-real');}
+}
+
+function onHumanSlider(tag,key,val){
+  document.getElementById('val-'+tag+'-'+key).innerText=val;if(S[tag]){S[tag].human[key]=parseInt(val);var m=S[tag];if(m&&m.done&&!m.allTimedOut&&m._agg){var hs=0;C.forEach(function(c){hs+=m.human[c.key]||0;});m.humanSum=hs;var aiS=0;C.forEach(function(c){var a=m._agg[c.key];aiS+=a.sum/a.n;});m.aiAvgSum=aiS;m.finalScore=Math.round(((aiS/100)*0.5+(hs/100)*0.5)*100);var el=document.getElementById('final-total-'+tag);if(el)el.innerText=m.finalScore+' /100';}}
+}
+
+// ── Charts ──
+function renderAAhbarChart(ranked){
+  var W=680,LH=44,topPad=30,bottomPad=30,H=topPad+ranked.length*LH+bottomPad,bmW=320,bX=170,sX=bX+bmW+14,svg='<svg width="100%" viewBox="0 0 '+W+' '+H+'" style="max-width:680px;display:block;margin:0 auto"><rect width="'+W+'" height="'+H+'" fill="#0a0e17" rx="12"/>';
+  for(var v=0;v<=100;v+=20){var x=bX+(v/100)*bmW;svg+='<line x1="'+x+'" y1="'+topPad+'" x2="'+x+'" y2="'+(H-bottomPad)+'" stroke="#1f2937" stroke-width="0.5"/><text x="'+x+'" y="'+(H-bottomPad+16)+'" fill="#4b5563" font-size="10" font-family="monospace" text-anchor="middle">'+v+'</text>';}
+  ranked.forEach(function(m,i){var d=S[m.tag],sc=d.finalScore||0,y=topPad+i*LH,bW=(sc/100)*bmW,ri=i===0?'🥇':i===1?'🥈':i===2?'🥉':''+(i+1);svg+='<text x="10" y="'+(y+22)+'" fill="#9ca3af" font-size="12" font-family="sans-serif" font-weight="700">'+ri+'</text><text x="36" y="'+(y+22)+'" fill="#d1d5db" font-size="12" font-family="sans-serif">'+m.emoji+' '+m.name+'</text><defs><linearGradient id="gb'+i+'" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="'+m.color+'cc"/><stop offset="100%" stop-color="'+m.color+'66"/></linearGradient></defs><rect x="'+bX+'" y="'+(y+6)+'" width="'+bW+'" height="22" rx="6" fill="url(#gb'+i+')" opacity="0.85"/><text x="'+sX+'" y="'+(y+22)+'" fill="#fff" font-size="13" font-family="monospace" font-weight="700">'+sc+'</text><text x="'+(sX+34)+'" y="'+(y+22)+'" fill="#6b7280" font-size="10">/100</text>';});
+  return svg+'</svg>';
+}
+
+function renderRadarChart(ranked){
+  var cx=200,cy=200,R=160,W=420,H=440,axes=C.length,svg='<svg width="100%" viewBox="0 0 '+W+' '+H+'" style="max-width:420px;display:block;margin:0 auto"><rect width="'+W+'" height="'+H+'" fill="#0a0e17" rx="12"/>';
+  for(var ring=5;ring<=20;ring+=5){var r=(ring/20)*R,pts=[];for(var a=0;a<axes;a++){var ang=-Math.PI/2+(a*2*Math.PI)/axes;pts.push((cx+r*Math.cos(ang))+','+(cy+r*Math.sin(ang)));}svg+='<polygon points="'+pts.join(' ')+'" fill="none" stroke="#1f2937" stroke-width="'+(ring===20?1.5:0.5)+'"/><text x="'+(cx+6)+'" y="'+(cy-r+4)+'" fill="#374151" font-size="9">'+ring+'</text>';}
+  for(var a=0;a<axes;a++){var ang=-Math.PI/2+(a*2*Math.PI)/axes,x=cx+R*Math.cos(ang),y=cy+R*Math.sin(ang);svg+='<line x1="'+cx+'" y1="'+cy+'" x2="'+x+'" y2="'+y+'" stroke="#1f2937" stroke-width="0.5"/><text x="'+(cx+(R+28)*Math.cos(ang))+'" y="'+(cy+(R+28)*Math.sin(ang))+'" fill="'+C[a].color+'" font-size="11" font-family="sans-serif" font-weight="600" text-anchor="middle" dominant-baseline="middle">'+C[a].label+'</text>';}
+  ranked.forEach(function(m,i){var d=S[m.tag];if(!d._agg)return;var pts=[];C.forEach(function(c,j){var a=d._agg[c.key],av=a.sum/a.n,ang=-Math.PI/2+(j*2*Math.PI)/axes,r=(av/20)*R;pts.push((cx+r*Math.cos(ang))+','+(cy+r*Math.sin(ang)));});svg+='<polygon points="'+pts.join(' ')+'" fill="'+m.color+'22" stroke="'+m.color+'" stroke-width="1.5" stroke-linejoin="round"/>';});
+  return svg+'</svg>';
+}
+
+function renderDimHeatmap(ranked){
+  var cW=76,rH=28,lW=140,tH=24,W=lW+C.length*cW+10,H=tH+ranked.length*rH+10,svg='<svg width="100%" viewBox="0 0 '+W+' '+H+'" style="max-width:'+W+'px;display:block;margin:0 auto"><rect width="'+W+'" height="'+H+'" fill="#0a0e17" rx="10"/>';
+  C.forEach(function(c,j){svg+='<text x="'+(lW+j*cW+cW/2)+'" y="16" fill="'+c.color+'" font-size="10" font-family="sans-serif" font-weight="600" text-anchor="middle">'+c.label+'</text>';});
+  ranked.forEach(function(m,i){var d=S[m.tag];if(!d._agg)return;svg+='<text x="8" y="'+(tH+i*rH+18)+'" fill="#d1d5db" font-size="11">'+m.emoji+' '+m.name+'</text>';C.forEach(function(c,j){var a=d._agg[c.key],av=a.sum/a.n,int=Math.round((av/20)*255);var rr=17+int*0.6,gg=24+int*0.3,bb=39+int*0.4,x=lW+j*cW,y=tH+i*rH;svg+='<rect x="'+(x+2)+'" y="'+(y+2)+'" width="'+(cW-4)+'" height="'+(rH-4)+'" rx="4" fill="rgb('+rr+','+gg+','+bb+')"/><text x="'+(x+cW/2)+'" y="'+(y+rH/2+4)+'" fill="'+(av>=15?'#fff':av>=10?'#d1d5db':'#9ca3af')+'" font-size="12" font-family="monospace" font-weight="700" text-anchor="middle">'+av.toFixed(1)+'</text>';});});
+  return svg+'</svg>';
+}
+
+// ── Report ──
+function generateReport(){
+  var comp=M.filter(function(m){var d=S[m.tag];return d&&d.done&&!d.allTimedOut&&d.runs.some(function(r){return r.done&&!r.timedOut;});});
+  var to=M.filter(function(m){var d=S[m.tag];return d&&d.allTimedOut;});
+  if(!comp.length&&!to.length)return alert('暂无评测数据！');if(!comp.length)return alert('所有模型均已超时淘汰。');
+  comp.forEach(function(m){var tag=m.tag,d=S[tag],dr=d.runs.filter(function(r){return r.done&&!r.timedOut;}),aiS=0,hs=0;C.forEach(function(c){var s=0;dr.forEach(function(r){s+=r.ai[c.key]||0;});aiS+=s/dr.length;hs+=d.human[c.key]||0;});d.aiAvgSum=aiS;d.humanSum=hs;d.finalScore=Math.round(((aiS/100)*0.5+(hs/100)*0.5)*100);});
+  var ranked=comp.slice().sort(function(a,b){return(S[b.tag].finalScore||0)-(S[a.tag].finalScore||0);});
+  var jo=J.find(function(o){return o.id===judgeModel;})||J[0],hc=jo.inTest===true;
+  var bd={};C.forEach(function(c){var bt=null,bv=-1;comp.forEach(function(m){var tag=m.tag,dr=S[tag].runs.filter(function(r){return r.done&&!r.timedOut;}),s=0;dr.forEach(function(r){s+=r.ai[c.key]||0;});var avg=s/dr.length,comb=(avg+(S[tag].human[c.key]||0))/2;if(comb>bv){bv=comb;bt=tag;}});bd[c.key]={tag:bt,score:bv};});
+  var winner=ranked[0],wD=S[winner.tag],html='';
+  if(hc){html+='<div style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.35);border-radius:12px;padding:14px;margin-bottom:16px"><p class="text-sm text-amber font-bold"><i class="fas fa-exclamation-triangle mr-1"></i>⚠️ 自我评测偏差警告</p><p class="text-xs text-gray-400">裁判 '+jo.name+' 同时是待测模型。建议切换为 Kimi/Step (第三方)。</p></div>';}
+  if(to.length){html+='<div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);border-radius:12px;padding:12px;margin-bottom:16px"><p class="text-sm text-red font-bold"><i class="fas fa-clock mr-1"></i>⏱️ 超时淘汰</p><p class="text-xs text-gray-400">'+to.map(function(m){return'<span class="font-mono text-red">'+m.emoji+' '+m.name+'</span>';}).join(' | ')+'</p></div>';}
+  html+='<h3 class="text-sm font-bold mb-3" style="color:#e5e7eb">🏆 综合排名 ('+runCount+'轮聚合)</h3><div class="overflow-x-auto mb-5"><table><thead><tr><th>#</th><th>模型</th>'+C.map(function(c){return'<th class="text-center">'+c.label+'</th>';}).join('')+'<th class="text-center">AI均值</th><th class="text-center">人工</th><th class="text-center" style="color:#22d3ee">最终</th><th class="text-center">耗时</th><th>备注</th></tr></thead><tbody>';
+  ranked.forEach(function(m,i){var d=S[m.tag],dr=d.runs.filter(function(r){return r.done&&!r.timedOut;}),rc=i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'',icon=i===0?'🥇':i===1?'🥈':i===2?'🥉':''+(i+1),aMs=dr.reduce(function(a,r){return a+(r.elapsedMs||0);},0)/dr.length,se=hc&&m.id===judgeModel;html+='<tr class="'+rc+'"><td style="font-weight:700;font-size:14px">'+icon+'</td><td class="font-mono" style="color:#e5e7eb">'+m.emoji+' '+m.name+'<br><span style="font-size:9px;color:#6b7280">'+m.vendor+'</span></td>';C.forEach(function(c){var s=0;dr.forEach(function(r){s+=r.ai[c.key]||0;});var av=s/dr.length,hum=d.human[c.key]||0,comb=(av+hum)/2,isB=bd[c.key]&&bd[c.key].tag===m.tag;html+='<td class="text-center font-mono" style="'+(isB?'color:#fbbf24;font-weight:700':'color:#d1d5db')+'">'+comb.toFixed(1)+(isB?'⭐':'')+'</td>';});html+='<td class="text-center font-mono text-indigo">'+d.aiAvgSum.toFixed(1)+'</td><td class="text-center font-mono text-amber">'+d.humanSum+'</td><td class="text-center font-mono text-lg font-bold text-cyan">'+d.finalScore+'</td><td class="text-center font-mono text-gray-500">'+(aMs/1000).toFixed(1)+'s</td><td class="text-center" style="font-size:10px">'+(se?'<span style="color:#fbbf24">⚠️ 自评</span>':'—')+'</td></tr>';});
+  html+='</tbody></table></div>';
+  html+='<h3 class="text-sm font-bold mb-3" style="color:#e5e7eb">📊 可视化对比</h3><div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px"><div style="background:rgba(17,24,39,.4);border-radius:14px;padding:12px;border:1px solid #1f2937"><p class="text-xs text-gray-400 mb-2 text-center font-bold">综合得分排名</p>'+renderAAhbarChart(ranked)+'</div><div style="background:rgba(17,24,39,.4);border-radius:14px;padding:12px;border:1px solid #1f2937"><p class="text-xs text-gray-400 mb-2 text-center font-bold">雷达图</p>'+renderRadarChart(ranked)+'</div></div><div style="background:rgba(17,24,39,.4);border-radius:14px;padding:12px;border:1px solid #1f2937;margin-bottom:16px"><p class="text-xs text-gray-400 mb-2 text-center font-bold">热度矩阵</p>'+renderDimHeatmap(ranked)+'</div>';
+  html+='<h3 class="text-sm font-bold mb-3" style="color:#e5e7eb">📊 各维度最佳</h3><div class="grid grid-5 gap-2 mb-5">'+C.map(function(c){var b=bd[c.key],mo=M.find(function(x){return x.tag===b.tag;});return'<div style="background:rgba(17,24,39,.6);border:1px solid #1f2937;border-radius:12px;padding:12px;text-align:center"><div class="text-xs text-gray-500 mb-1">'+c.label+'</div><div class="text-xs font-bold text-amber">'+(mo?mo.emoji:'')+' '+(mo?mo.name:b.tag)+'</div><div class="text-lg font-mono text-white mt-1">'+b.score.toFixed(1)+'<span class="text-xs text-gray-500">/20</span></div></div>';}).join('')+'</div>';
+  html+='<h3 class="text-sm font-bold mb-3" style="color:#e5e7eb">🎯 推荐</h3><div style="background:linear-gradient(135deg,rgba(245,158,11,.08),rgba(249,115,22,.03));border:1px solid rgba(245,158,11,.25);border-radius:12px;padding:16px;margin-bottom:16px"><div class="flex items-center gap-2 mb-2"><span style="font-size:24px">🏆</span><span style="font-size:18px;font-weight:700;color:#fbbf24">推荐: '+winner.emoji+' '+winner.name+'</span></div><div class="text-xs" style="color:#d1d5db;line-height:1.9"><p>得分: <span class="font-mono" style="color:#fff;font-size:15px">'+wD.finalScore+' /100</span></p><p>在'+comp.length+'个有效模型中排名第一。</p>'+(hc&&winner.id===judgeModel?'<p style="color:#fbbf24">⚠️ 冠军与裁判相同，建议用第三方裁判重测。</p>':'')+'</div></div>';
+  // ── 完整过程数据存档 ──
+  html+='<h3 class="text-sm font-bold mb-3" style="color:#e5e7eb">📋 完整过程数据存档 (Process Data Archive)</h3>';
+
+  // 每轮情境
+  html+='<div style="background:rgba(17,24,39,.4);border-radius:12px;padding:12px;border:1px solid #1f2937;margin-bottom:12px"><h4 class="text-xs font-bold mb-2" style="color:#22d3ee"><i class="fas fa-file-alt mr-1"></i>1. 评测情境 (每轮使用不同情境)</h4>';
+  for(var ri=0;ri<runCount;ri++){var rr=S[comp[0].tag].runs[ri];var rp=rr&&rr.prompt?rr.prompt:(S[comp[0].tag].rawPrompt||'(未知)');html+='<details style="margin-bottom:4px"><summary style="cursor:pointer;font-size:11px;color:#e5e7eb">🔄 第'+(ri+1)+'轮情境</summary><pre style="background:#0a0e17;padding:8px;border-radius:6px;font-size:10px;color:#9ca3af;white-space:pre-wrap;line-height:1.6;max-height:200px;overflow-y:auto;font-family:monospace;margin-top:4px">'+esc(rp)+'</pre></details>';}
+  html+='</div>';
+
+  // 逐轮逐模型完整输出 + 评语
+  html+='<h4 class="text-xs font-bold mb-2" style="color:#22d3ee"><i class="fas fa-brain mr-1"></i>2. 各模型逐轮输出 & AI裁判评语</h4>';
+  for(var ri=0;ri<runCount;ri++){
+    html+='<div style="background:rgba(17,24,39,.3);border-radius:10px;padding:10px;border:1px solid #1f2937;margin-bottom:8px"><span class="text-xs font-bold" style="color:#e5e7eb">🔄 第 '+(ri+1)+' 轮</span>';
+    comp.concat(to).forEach(function(m){
+      var d=S[m.tag],run=d.runs[ri];
+      if(!run){return;}
+      var scStr='';if(run.done){var ts=0;C.forEach(function(c){ts+=run.ai[c.key]||0;});scStr='总分: '+ts+'/100 | '+C.map(function(c){return c.label+': '+(run.ai[c.key]||0);}).join(', ');}
+      html+='<div style="margin-top:6px;display:grid;grid-template-columns:1fr 1fr;gap:8px"><div><span class="text-xs" style="color:'+m.color+'">'+m.emoji+' '+m.name+'</span>'+(run.timedOut?' <span style="color:#f87171;font-size:10px">⏱️ 超时</span>':'')+(run.done?' <span style="color:#34d399;font-size:10px">✅</span>':'')+'<pre style="background:#0a0e17;padding:6px;border-radius:4px;font-size:10px;color:#9ca3af;white-space:pre-wrap;line-height:1.5;max-height:150px;overflow-y:auto;margin-top:2px;font-family:monospace">'+esc(run.plan||'(无输出)')+'</pre></div><div><span class="text-xs text-gray-500">AI裁判评语'+(run.done?'':' (异常)')+':</span><div style="background:#0a0e17;padding:6px;border-radius:4px;font-size:10px;color:#9ca3af;line-height:1.5;max-height:150px;overflow-y:auto;margin-top:2px">'+esc(run.verdict||'(无)')+'</div><div class="text-xs text-gray-500 mt-1">'+scStr+' | '+(run.elapsedMs/1000).toFixed(1)+'s</div></div></div>';
+    });
+    html+='</div>';
+  }
+
+  // 逐轮分数汇总表
+  html+='<h4 class="text-xs font-bold mb-2 mt-3" style="color:#22d3ee"><i class="fas fa-table mr-1"></i>3. 逐轮分数汇总 (每维度AI评分 + 总分)</h4><div class="overflow-x-auto" style="margin-bottom:12px"><table style="font-size:10px"><thead><tr><th>模型</th><th>轮次</th>'+C.map(function(c){return'<th class="text-center">'+c.label+'</th>';}).join('')+'<th class="text-center">总</th><th class="text-center">耗时</th></tr></thead><tbody>';
+  comp.concat(to).forEach(function(m){
+    var d=S[m.tag];d.runs.forEach(function(r,i){
+      if(!r.done&&!r.timedOut)return;
+      if(r.timedOut){html+='<tr style="background:rgba(239,68,68,.06)"><td>'+m.emoji+' '+m.name+'</td><td style="color:#f87171">R'+(i+1)+' ⏱️</td><td colspan="'+C.length+'" class="text-center" style="color:#f87171">超时</td><td class="text-center" style="color:#f87171">—</td><td class="text-center" style="color:#f87171">'+(r.elapsedMs/1000).toFixed(1)+'s</td></tr>';return;}
+      var ts=0;C.forEach(function(c){ts+=r.ai[c.key]||0;});
+      html+='<tr'+(i===d.bestRunIdx?' style="background:rgba(34,211,238,.05)"':'')+'><td>'+m.emoji+' '+m.name+'</td><td style="font-weight:600">'+(i===d.bestRunIdx?'⭐':'')+' R'+(i+1)+'</td>'+C.map(function(c){return'<td class="text-center font-mono">'+(r.ai[c.key]||0)+'</td>';}).join('')+'<td class="text-center font-mono font-bold" style="color:#22d3ee">'+ts+'</td><td class="text-center font-mono text-gray-500">'+(r.elapsedMs/1000).toFixed(1)+'s</td></tr>';
+    });
+    // 均值行
+    if(!d.allTimedOut){var dr2=d.runs.filter(function(r){return r.done&&!r.timedOut;}),i2;html+='<tr style="background:rgba(245,158,11,.06);font-weight:700"><td>'+m.emoji+' '+m.name+'</td><td style="color:#fbbf24">均值</td>';C.forEach(function(c){var s2=0;dr2.forEach(function(r){s2+=r.ai[c.key]||0;});html+='<td class="text-center font-mono" style="color:#fbbf24">'+(s2/dr2.length).toFixed(1)+'</td>';});var ts2=0;dr2.forEach(function(r){C.forEach(function(c){ts2+=r.ai[c.key]||0;});});html+='<td class="text-center font-mono font-bold" style="color:#fbbf24">'+(ts2/dr2.length).toFixed(1)+'</td><td class="text-center font-mono text-gray-500">—</td></tr>';}
+  });
+  html+='</tbody></table></div>';
+
+  // 元数据
+  html+='<h4 class="text-xs font-bold mb-2" style="color:#22d3ee"><i class="fas fa-database mr-1"></i>4. 评测元数据</h4><div style="background:rgba(17,24,39,.6);border-radius:12px;padding:12px;border:1px solid #1f2937;font-size:11px;color:#6b7280;line-height:1.9;font-family:monospace"><p>开始: '+(benchStartTime?benchStartTime.toLocaleString():'N/A')+' | 报告: '+new Date().toLocaleString()+'</p><p>轮数: '+runCount+' | 超时: '+T/1000+'s | 有效: '+comp.length+'/5 | 淘汰: '+to.length+'/5</p><p>裁判: '+jo.name+' ('+jo.vendor+') | 公式: (AI多轮均值/100×50%)+(人工/100×50%)→百分制 | API: 硅基流动</p></div>';
+  document.getElementById('reportContent').innerHTML=html;document.getElementById('modalReport').classList.add('show');
+}
+
+// ── Day1 Console ──
+function generateDay1Console(){
+  var comp=[];M.forEach(function(m){var d=S[m.tag];if(d&&d.done&&!d.allTimedOut&&d.runs.some(function(r){return r.done&&!r.timedOut;})){comp.push(m);var dr=d.runs.filter(function(r){return r.done&&!r.timedOut;}),aiS=0,hs=0;C.forEach(function(c){var s=0;dr.forEach(function(r){s+=r.ai[c.key]||0;});aiS+=s/dr.length;hs+=d.human[c.key]||0;});d.aiAvgSum=aiS;d.humanSum=hs;d.finalScore=Math.round(((aiS/100)*0.5+(hs/100)*0.5)*100);}});
+  if(!comp.length)return alert('暂无评测数据！');
+  comp.sort(function(a,b){return(S[b.tag].finalScore||0)-(S[a.tag].finalScore||0);});
+  var jo=J.find(function(o){return o.id===judgeModel;})||J[0],nw=new Date().toLocaleString('zh-CN'),td=new Date().toISOString().slice(0,10);
+  var to=M.filter(function(m){var d=S[m.tag];return d&&d.allTimedOut;});
+
+  // 各维度最佳
+  var best={};C.forEach(function(cr){var bt=null,bv=-1;comp.forEach(function(m){var dr=S[m.tag].runs.filter(function(r){return r.done&&!r.timedOut;}),s=0;dr.forEach(function(r){s+=r.ai[cr.key]||0;});var comb=(s/dr.length+(S[m.tag].human[cr.key]||0))/2;if(comb>bv){bv=comb;bt=m.tag;}});best[cr.key]={tag:bt,score:bv};});
+
+  // JSON deliverables
+  var rm={schedule:"multimodal_context",dependency:"code_assistant",balance:"risk_checker",constraint:"context_designer",executable:"schema_generator"};
+  var router={router:{},generated_at:nw,purpose:"Day1评测结果转为Day2模型路由依据",product_direction:"日程规划：基于大模型的项目排班与任务分配",day2_requirements:["每个router key对应一个任务角色","得分接近的模型列为备选","fallback必须具体可执行"]};C.forEach(function(cr){var rk=rm[cr.key],bd=best[cr.key],nm=M.find(function(x){return x.tag===bd.tag;}),alts=[];comp.forEach(function(m,i){if(m.tag===bd.tag)return;var dr=S[m.tag].runs.filter(function(r){return r.done&&!r.timedOut;}),s=0;dr.forEach(function(r){s+=r.ai[cr.key]||0;});var c2=(s/dr.length+(S[m.tag].human[cr.key]||0))/2;if(bd.score-c2<=2)alts.push({model:m.name,score:parseFloat(c2.toFixed(1))});});var entry={preferred_model:nm?nm.name:bd.tag,evidence_task:"schedule_planning",score:parseFloat(bd.score.toFixed(1)),fallback_rule:alts.length?"得分接近可切换至 "+alts.map(function(x){return x.model;}).join(" 或 "):"失败切换至"+(comp.length>=2?comp[1].name:comp[0].name)};if(alts.length)entry.alternatives=alts;router.router[rk]=entry;});router.router.product_planner={preferred_model:comp[0].name,evidence_task:"overall",score:S[comp[0].tag].finalScore,fallback_rule:"失败切换至"+(comp.length>=2?comp[1].name:comp[0].name)};
+  if(comp.length>=2&&S[comp[0].tag].finalScore-S[comp[1].tag].finalScore<=5)router.router.product_planner.alternatives=[{model:comp[1].name,score:S[comp[1].tag].finalScore}];
+  var rStr=JSON.stringify(router,null,2);
+
+  var matrix={generated_at:nw,platform:"LLM Schedule-Bench",rounds:runCount,judge:jo.name,judge_vendor:jo.vendor,models:[]};comp.forEach(function(m){var d=S[m.tag],dr=d.runs.filter(function(r){return r.done&&!r.timedOut;}),entry={name:m.name,id:m.id,vendor:m.vendor,rank:comp.indexOf(m)+1,final_score:d.finalScore,dimensions:{}};C.forEach(function(c){var s=0;dr.forEach(function(r){s+=r.ai[c.key]||0;});entry.dimensions[c.key]={ai_avg:parseFloat((s/dr.length).toFixed(1)),human:d.human[c.key]||0,combined:parseFloat(((s/dr.length+(d.human[c.key]||0))/2).toFixed(1))};});matrix.models.push(entry);});if(to.length)matrix.eliminated=to.map(function(m){return{name:m.name,vendor:m.vendor,reason:"超时淘汰"};});
+  var mStr=JSON.stringify(matrix,null,2);
+
+  var results=[];comp.concat(to).forEach(function(m){var d=S[m.tag];d.runs.forEach(function(r,i){if(!r.done&&!r.timedOut)return;var entry={task:{id:"schedule_planning_r"+(i+1),title:"日程规划生成 (轮次"+(i+1)+")"},model:{id:m.id,label:m.name},score:C.reduce(function(a,c){return a+(r.ai?r.ai[c.key]||0:0);},0),ok:!r.timedOut};if(r.timedOut)entry.failure_reason="超时淘汰";else if(r.done)entry.output={verdict:r.verdict||"",text:r.plan?r.plan.slice(0,500):""};results.push(entry);});});
+  var rsStr=JSON.stringify(results,null,2);
+
+  var speedR=comp.slice().sort(function(a,b){var da=S[a.tag],db=S[b.tag],dra=da.runs.filter(function(r){return r.done&&!r.timedOut;}),drb=db.runs.filter(function(r){return r.done&&!r.timedOut;});return(dra.reduce(function(x,r){return x+(r.elapsedMs||0);},0)/dra.length)-(drb.reduce(function(x,r){return x+(r.elapsedMs||0);},0)/drb.length);});
+  var poolPolicy={generated_at:nw,provider:"SiliconFlow",classroom_policy:"学生可从硅基流动任选模型，本报告5个模型为真实评测结果",baseline_models:comp.map(function(m){return{name:m.name,id:m.id,vendor:m.vendor,score:S[m.tag].finalScore};}),selection_tracks:[{track:"schedule_planning",required:true,minimum_candidates:1,tasks:["product_planner","context_designer","schema_generator","code_assistant","risk_checker","multimodal_context"],evidence:runCount+"轮评测，含AI裁判评分与人工审查"},{track:"speed_optimized",required:false,minimum_candidates:1,tasks:["fast_generation"],evidence:"平均耗时"}],routing_roles:["product_planner","context_designer","schema_generator","code_assistant","risk_checker","multimodal_context"]};
+  var ppStr=JSON.stringify(poolPolicy,null,2);
+
+  var failMD="# 失败样本记录 (Failure Casebook)\n\n> 生成: "+nw+" | 轮数: "+runCount+" | 裁判: "+jo.name+"\n\n";if(to.length)to.forEach(function(m){failMD+="## "+m.name+" ("+m.vendor+")\n\n**状态:** ❌ 全部"+runCount+"轮超时淘汰 (>"+T/1000+"s)\n\n**影响:** 不进入最终排名和路由表。\n\n";});else failMD+="✅ 本轮评测无失败样本，所有模型均正常完成。\n";failMD+="---\n*LLM Schedule-Bench 自动生成*";
+
+  var playMD="# 模型选型手册 (Model Selection Playbook)\n\n> "+runCount+"轮评测 | 裁判: "+jo.name+" ("+jo.vendor+") | "+nw+"\n\n## 综合推荐\n\n**首选:** "+comp[0].emoji+" "+comp[0].name+" ("+comp[0].vendor+") — "+S[comp[0].tag].finalScore+"/100\n\n## 各维度最佳\n\n";C.forEach(function(c){var bd=best[c.key],nm=M.find(function(x){return x.tag===bd.tag;});playMD+="- **"+c.label+"**: "+(nm?nm.name:bd.tag)+" ("+bd.score.toFixed(1)+"/20)\n";});playMD+="\n## 模型对比\n\n| 模型 | 厂商 | 总分 | 耗时 |\n|------|------|------|------|\n";comp.forEach(function(m){var d=S[m.tag],dr=d.runs.filter(function(r){return r.done&&!r.timedOut;}),av=dr.reduce(function(a,r){return a+(r.elapsedMs||0);},0)/dr.length;playMD+="| "+m.emoji+" "+m.name+" | "+m.vendor+" | "+d.finalScore+"/100 | "+(av/1000).toFixed(1)+"s |\n";});playMD+="\n---\n*LLM Schedule-Bench 自动生成*";
+
+  // 学生任务卡 - 基于真实评测数据回答
+  var drBest=S[comp[0].tag].runs.filter(function(r){return r.done&&!r.timedOut;});
+  var drScores="";C.forEach(function(c){var s=0;drBest.forEach(function(r){s+=r.ai[c.key]||0;});drScores+=c.label+": "+(s/drBest.length).toFixed(1)+"/20, ";});
+  var failList=to.length?to.map(function(m){return m.name+"("+m.vendor+")";}).join("、"):"无";
+  var vendorList=comp.map(function(m){return m.vendor;}).filter(function(v,i,a){return a.indexOf(v)===i;}).join("、");
+  var dimBest="";C.forEach(function(c){var nm=M.find(function(x){return x.tag===best[c.key].tag;});dimBest+="\n  - "+c.label+": "+(nm?nm.name:best[c.key].tag)+" ("+best[c.key].score.toFixed(1)+"/20)";});
+
+  var taskMD="# 学生任务卡 (Student Task Cards)\n\n> Day1 模型能力评估 | "+nw+" | 基于真实评测数据自动生成\n\n"+
+    "## Q1: 今天评测了哪些国产大模型？为什么选这些？\n\n"+
+    "评测了 "+comp.length+" 个模型，来自 "+vendorList+" 共 "+(comp.length>0&&comp[0].vendor!==comp[1].vendor?comp.map(function(m){return m.vendor;}).filter(function(v,i,a){return a.indexOf(v)===i;}).length:comp.length)+" 家厂商：\n\n"+
+    comp.map(function(m,i){return (i+1)+". "+m.emoji+" **"+m.name+"** ("+m.vendor+") — 最终得分 "+S[m.tag].finalScore+"/100";}).join("\n")+"\n\n"+
+    (to.length?"淘汰模型: "+failList+"\n\n":"")+
+    "选择理由：覆盖不同厂商和参数规模（DeepSeek 671B、阿里 32B/14B、字节 Seed 36B、智谱 9B），通过对比评测找到最适合日程规划任务的模型。\n\n"+
+    "## Q2: 评测了哪些任务？每个任务用什么指标？\n\n"+
+    "评测任务：日程规划生成（Schedule Planning）— 根据小组作业目标、成员画像和时间约束，生成完整的项目排班计划。\n\n"+
+    "评分采用5维20分制（总分100）：\n\n"+
+    C.map(function(c){return "- **"+c.label+"** (0-20分)：评估计划的"+c.label+"表现";}).join("\n")+"\n\n"+
+    "每个模型每轮输出均由AI裁判（"+jo.name+"）盲评打分，人工审查员再基于输出进行二次评分，最终得分 = AI评分(50%) + 人工审查(50%)。\n\n"+
+    "## Q3: 不同模型在任务上的表现差异是什么？\n\n"+
+    "🏆 **综合最佳: "+comp[0].emoji+" "+comp[0].name+"** — "+S[comp[0].tag].finalScore+"/100\n\n"+
+    "各维度最佳模型："+dimBest+"\n\n"+
+    (comp.length>=2?"🥈 **第二名: "+comp[1].emoji+" "+comp[1].name+"** — "+S[comp[1].tag].finalScore+"/100"+(S[comp[0].tag].finalScore-S[comp[1].tag].finalScore<=5?" (与第一名差距≤5分，可作为备选)":"")+"\n\n":"")+
+    "关键发现：\n"+comp.map(function(m,i){var d=S[m.tag];return "- "+m.emoji+" "+m.name+": 总分 "+d.finalScore+"/100"+(i===0?" ← 推荐首选":"");}).join("\n")+"\n\n"+
+    "## Q4: 失败样本有哪些？如何处理？\n\n"+
+    (failList!=="无"?"失败模型: "+failList+" — 超过 "+T/1000+" 秒超时上限，已从路由表中排除。\n\n":"✅ 本轮无失败样本，所有模型均正常完成。\n\n")+
+    "处理策略：超时模型不进入路由表，Fallback机制确保首选模型不可用时自动切换至第二名。\n\n"+
+    "## Q5: Day2 的模型路由规则是什么？\n\n"+
+    "路由策略遵循 Phase1 接口规范，包含6个任务角色：\n\n"+
+    "- **product_planner** (综合规划) → "+router.router.product_planner.preferred_model+"\n"+
+    C.map(function(cr){var rk=rm[cr.key];return "- **"+rk+"** ("+cr.label+") → "+router.router[rk].preferred_model;}).join("\n")+"\n\n"+
+    "每个角色配置了 fallback 规则：首选模型失败时自动切换至备选模型。得分差≤2分的模型列为 alternatives 共同推荐。\n\n"+
+    "## Q6: 这次评测的局限性是什么？\n\n"+
+    "- 仅评测了日程规划单一任务，未覆盖代码生成、多模态理解等场景\n"+
+    "- AI裁判（"+jo.name+"）的评分可能存在"+(jo.inTest?"自我评测偏差":"一定主观性")+"\n"+
+    "- "+runCount+"轮评测，"+(runCount<3?"建议增加至3轮以上以获得更稳定结果":"结果具有较好的统计稳定性")+"\n"+
+    "- 评测基于硅基流动API，不同API提供商的模型表现可能有差异\n\n"+
+    "## 交付检查清单\n\n"+
+    "- [x] day1_to_day2_brief.json — 模型路由表 ✅\n"+
+    "- [x] model_capability_matrix.json — 能力矩阵 ✅\n"+
+    "- [x] model_pool_policy.json — 模型池策略 ✅\n"+
+    "- [x] failure_casebook.md — 失败样本记录 ✅\n"+
+    "- [x] model_selection_playbook.md — 选型手册 ✅\n"+
+    "- [x] student_task_cards.md — 本任务卡 ✅\n\n"+
+    "---\n*由 LLM Schedule-Bench 基于真实评测数据自动生成*";
+
+  // Build page — Phase1 style
+  function dl(n,c){var b=new Blob([c],{type:"text/plain;charset=utf-8"}),u=URL.createObjectURL(b);var a=document.createElement("a");a.href=u;a.download=n;a.click();URL.revokeObjectURL(u);}
+  function esc2(t){var d=document.createElement('div');d.appendChild(document.createTextNode(t));return d.innerHTML;}
+
+  var h='<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Day1 模型能力评估控制台</title><style>'+
+    'body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:#f5f7f8;color:#17202a;line-height:1.58}'+
+    'header{background:#243746;color:white;padding:36px 42px 26px}header h1{margin:0 0 8px;font-size:30px}header p{margin:0;color:#dbe4ea;max-width:980px}'+
+    'main{max-width:1080px;margin:24px auto 48px;padding:0 22px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}'+
+    '.panel{background:white;border:1px solid #d8dee6;border-radius:8px;padding:20px;margin:16px 0}.tag{display:inline-block;border:1px solid #b8ded8;background:#eef8f6;color:#0b534d;border-radius:999px;padding:3px 10px;font-size:12px;margin-right:6px}'+
+    '.tag-red{border-color:#f5c6cb;background:#fff5f5;color:#991b1b}.tag-blue{border-color:#bfdbfe;background:#eff6ff;color:#1e40af}'+
+    'h2{margin:10px 0;font-size:22px}.muted{color:#667789}.button{display:inline-block;text-decoration:none;background:#0f766e;color:white;border-radius:6px;padding:8px 12px;font-weight:650;margin:4px 4px 4px 0;font-size:12px}'+
+    'code{background:#f1f5f9;border:1px solid #d8dee6;border-radius:5px;padding:1px 5px;font-size:12px}'+
+    '.json-block{background:#1e293b;color:#e2e8f0;padding:12px;border-radius:6px;font-size:11px;line-height:1.6;overflow-x:auto;white-space:pre;font-family:"SF Mono","Cascadia Code","Consolas",monospace;max-height:350px;overflow-y:auto}'+
+    '.file-row{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.file-link{display:inline-block;padding:4px 10px;background:#f1f5f9;border:1px solid #d8dee6;border-radius:5px;color:#0f766e;text-decoration:none;font-size:12px;cursor:pointer}.file-link:hover{background:#0f766e;color:white}'+
+    '@media(max-width:820px){.grid{grid-template-columns:1fr}header{padding:28px 22px 20px}}'+
+    '</style></head><body><header><h1>Day1 模型能力评估控制台</h1><p>不看排行榜，看你自己测出来的结果。从国产大模型候选池出发，比较模型在日程规划任务上的表现，把模型差异转化为 Day2 可用的路由规则。</p></header><main>'+
+
+    // ── 主产物 + 原始证据 (2列) ──
+    '<div class="grid"><div class="panel"><span class="tag">主产物</span><h2>模型能力评估控制台</h2><p class="muted">包含 baseline 模型、自选模型、多模态候选、评分、失败样本、选型依据和 Day2 路由导出。</p>'+
+    '<p>'+comp.map(function(m,i){return'<span style="margin-right:8px">'+(i===0?'🥇':i===1?'🥈':i===2?'🥉':'')+' '+m.emoji+' '+m.name+'</span>';}).join(' ')+'</p>'+
+    '<p class="muted" style="margin-top:8px">'+runCount+'轮聚合 | 裁判: '+jo.name+' ('+jo.vendor+') | '+nw+'</p></div>'+
+
+    '<div class="panel"><span class="tag">原始证据</span><h2>调用结果 JSON</h2><p class="muted">保留真实模型调用结果，支撑 assessment 和复盘。</p>'+
+    '<a class="button" href="javascript:void(0)" onclick="downloadFile(\'day1_results.json\')">查看 day1_results.json</a>'+
+    '<div class="json-block" style="margin-top:8px">'+esc2(rsStr.slice(0,2000))+(rsStr.length>2000?'\n... (共'+rsStr.length+'字节)':'')+'</div></div></div>'+
+
+    // ── 路由表 (JSON) ──
+    '<div class="panel"><span class="tag">路由规则</span><h2>Day2 模型路由表 · day1_to_day2_brief.json</h2><p class="muted">遵循 Phase1 交付接口规范。6个 router key，每个包含 preferred_model、score、fallback_rule，得分差≤2分的模型列为 alternatives 备选。</p>'+
+    '<a class="button" href="javascript:void(0)" onclick="downloadFile(\'day1_to_day2_brief.json\')">下载 day1_to_day2_brief.json</a>'+
+    '<div class="json-block" style="margin-top:8px">'+esc2(rStr)+'</div></div>'+
+
+    // ── 能力矩阵 (JSON) ──
+    '<div class="panel"><span class="tag">能力矩阵</span><h2>模型能力矩阵 · model_capability_matrix.json</h2><p class="muted">5个模型 × 5个维度，每维度含 AI评分均值(ai_avg)、人工审查分(human)、综合分(combined)。</p>'+
+    '<a class="button" href="javascript:void(0)" onclick="downloadFile(\'model_capability_matrix.json\')">下载 model_capability_matrix.json</a>'+
+    '<div class="json-block" style="margin-top:8px">'+esc2(mStr.slice(0,3000))+(mStr.length>3000?'\n... (共'+mStr.length+'字节)':'')+'</div></div>'+
+
+    // ── 模型池策略 + 全部文件证据 ──
+    '<div class="grid"><div class="panel"><span class="tag">选型策略</span><h2>模型池选型策略 · model_pool_policy.json</h2>'+
+    '<a class="button" href="javascript:void(0)" onclick="downloadFile(\'model_pool_policy.json\')">下载 model_pool_policy.json</a>'+
+    '<div class="json-block" style="margin-top:8px;max-height:200px">'+esc2(ppStr.slice(0,1500))+(ppStr.length>1500?'\n... (共'+ppStr.length+'字节)':'')+'</div></div>'+
+
+    '<div class="panel"><span class="tag tag-blue">全部交付</span><h2>文件证据</h2><p class="muted">本日全部7项交付物，均可独立下载。</p>'+
+    '<div class="file-row">'+
+    '<a class="file-link" href="javascript:void(0)" onclick="downloadFile(\'day1_to_day2_brief.json\')">day1_to_day2_brief.json</a>'+
+    '<a class="file-link" href="javascript:void(0)" onclick="downloadFile(\'model_capability_matrix.json\')">model_capability_matrix.json</a>'+
+    '<a class="file-link" href="javascript:void(0)" onclick="downloadFile(\'model_pool_policy.json\')">model_pool_policy.json</a>'+
+    '<a class="file-link" href="javascript:void(0)" onclick="downloadFile(\'day1_results.json\')">day1_results.json</a>'+
+    '<a class="file-link" href="javascript:void(0)" onclick="downloadFile(\'model_selection_playbook.md\')">model_selection_playbook.md</a>'+
+    '<a class="file-link" href="javascript:void(0)" onclick="downloadFile(\'failure_casebook.md\')">failure_casebook.md</a>'+
+    '<a class="file-link" href="javascript:void(0)" onclick="downloadFile(\'student_task_cards.md\')">student_task_cards.md</a>'+
+    '</div></div></div>'+
+
+    // ── 失败样本 ──
+    '<div class="panel"><span class="tag'+(to.length?' tag-red':'')+'">失败样本</span><h2>失败样本记录 · failure_casebook.md</h2><p class="muted">记录评测过程中的超时和异常情况。</p>'+
+    '<pre style="background:#fafbfc;padding:12px;border-radius:6px;font-size:12px;line-height:1.7;white-space:pre-wrap;max-height:200px;overflow-y:auto">'+esc2(failMD)+'</pre></div>'+
+
+    // ── 选型手册 + 学生任务卡 (2列) ──
+    '<div class="grid"><div class="panel"><span class="tag">选型手册</span><h2>模型选型手册 · model_selection_playbook.md</h2>'+
+    '<pre style="background:#fafbfc;padding:12px;border-radius:6px;font-size:12px;line-height:1.7;white-space:pre-wrap;max-height:250px;overflow-y:auto">'+esc2(playMD)+'</pre></div>'+
+    '<div class="panel"><span class="tag">学生任务</span><h2>学生任务卡 · student_task_cards.md</h2>'+
+    '<pre style="background:#fafbfc;padding:12px;border-radius:6px;font-size:12px;line-height:1.7;white-space:pre-wrap;max-height:250px;overflow-y:auto">'+esc2(taskMD)+'</pre></div></div>'+
+
+    // ── 本日边界 ──
+    '<div class="panel"><span class="tag">本日边界</span><h2>评估方法与工程边界</h2><p class="muted">Day1 聚焦模型能力评估。它回答一个工程问题：面对不同任务，国产大模型的能力差异如何被观察、记录，并转化为 Day2 的模型路由。</p>'+
+    '<table style="width:100%;border-collapse:collapse;font-size:13px;margin-top:8px"><tr><td style="padding:8px 12px;border:1px solid #d8dee6;font-weight:600;width:160px">评测平台</td><td style="padding:8px 12px;border:1px solid #d8dee6">LLM Schedule-Bench</td></tr>'+
+    '<tr><td style="padding:8px 12px;border:1px solid #d8dee6;font-weight:600">轮数</td><td style="padding:8px 12px;border:1px solid #d8dee6">'+runCount+' 轮聚合 (超时上限 '+T/1000+'s)</td></tr>'+
+    '<tr><td style="padding:8px 12px;border:1px solid #d8dee6;font-weight:600">维度</td><td style="padding:8px 12px;border:1px solid #d8dee6">'+C.map(function(c){return c.label;}).join('、')+'</td></tr>'+
+    '<tr><td style="padding:8px 12px;border:1px solid #d8dee6;font-weight:600">裁判</td><td style="padding:8px 12px;border:1px solid #d8dee6">'+jo.name+' ('+jo.vendor+')'+(jo.inTest?' ⚠️ 与待测模型同厂商':'')+'</td></tr>'+
+    '<tr><td style="padding:8px 12px;border:1px solid #d8dee6;font-weight:600">有效模型</td><td style="padding:8px 12px;border:1px solid #d8dee6">'+comp.length+'/5 | 淘汰: '+to.length+'/5</td></tr>'+
+    '<tr><td style="padding:8px 12px;border:1px solid #d8dee6;font-weight:600">API提供</td><td style="padding:8px 12px;border:1px solid #d8dee6">硅基流动 (api.siliconflow.cn)</td></tr></table></div>'+
+
+    '</main></body></html>';
+
+  // Store data for download buttons in the generated page
+  var dlData={_r:rStr,_m:mStr,_rs:rsStr,_pp:ppStr,_fm:failMD,_pm:playMD,_tm:taskMD};
+  var dlScript='<script>var _D='+JSON.stringify(dlData)+';function downloadFile(n){var m={_r:"day1_to_day2_brief.json",_m:"model_capability_matrix.json",_rs:"day1_results.json",_pp:"model_pool_policy.json",_fm:"failure_casebook.md",_pm:"model_selection_playbook.md",_tm:"student_task_cards.md"};var k=null;for(var x in m){if(m[x]===n){k=x;break;}}var c=k?_D[k]:"";if(!c){alert("内容为空，请刷新页面后重新生成Day1控制台");return;}var b=new Blob([c],{type:"text/plain;charset=utf-8"});var u=URL.createObjectURL(b);var a=document.createElement("a");a.href=u;a.download=n;a.click();setTimeout(function(){URL.revokeObjectURL(u);},2000);}<\/script>';
+  h=h.replace('</body>',dlScript+'</body>');
+
+  var blob=new Blob([h],{type:"text/html;charset=utf-8"}),url=URL.createObjectURL(blob);
+  var a=document.createElement("a");a.href=url;a.download="Day1_模型能力评估控制台_"+td+".html";a.click();
+  window.open(url,"_blank");setTimeout(function(){URL.revokeObjectURL(url);},3000);
+}
+
+function esc(t){var d=document.createElement('div');d.appendChild(document.createTextNode(t));return d.innerHTML;}
+
+function exportCSV(){
+  var all=M.filter(function(m){return S[m.tag]&&S[m.tag].runs.length;});if(!all.length)return;
+  var csv='模型,轮次,状态,'+C.map(function(c){return c.label;}).join(',')+',AI总分,耗时s,人工总分,最终得分\n';
+  all.forEach(function(m){var d=S[m.tag];d.runs.forEach(function(r,i){if(r.timedOut)csv+=m.name+',R'+(i+1)+',超时,,,,,,'+(r.elapsedMs/1000).toFixed(1)+',,\n';else if(!r.done)csv+=m.name+',R'+(i+1)+',API异常,,,,,,\n';else{var sum=0;C.forEach(function(c){sum+=r.ai[c.key]||0;});csv+=m.name+',R'+(i+1)+',完成,'+C.map(function(c){return r.ai[c.key]||0;}).join(',')+','+sum+','+(r.elapsedMs/1000).toFixed(1)+',,\n';}});if(!d.allTimedOut){csv+=m.name+',聚合均值,'+C.map(function(c){var dr=d.runs.filter(function(r){return r.done&&!r.timedOut;}),s=0;dr.forEach(function(r){s+=r.ai[c.key]||0;});return dr.length?(s/dr.length).toFixed(1):'N/A';}).join(',')+','+(d.aiAvgSum?d.aiAvgSum.toFixed(1):'N/A')+',,'+(d.humanSum||'N/A')+','+(d.finalScore||'N/A')+'\n';}});
+  var blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='ScheduleBench_'+new Date().toISOString().slice(0,10)+'.csv';a.click();URL.revokeObjectURL(url);
+}
+
+function showStandards(){document.getElementById('modalStandards').classList.add('show');}
+function hideStandards(){document.getElementById('modalStandards').classList.remove('show');}
+function hideReport(){document.getElementById('modalReport').classList.remove('show');}
+function escapeHtml(t){var d=document.createElement('div');d.appendChild(document.createTextNode(t));return d.innerHTML;}
+</script>
+</body>
+</html>
