@@ -169,7 +169,20 @@ Answer: A
     <div class="quote" style="margin-top:18px;font-size:26px">今天的任务：从你自己的需求出发，为国产大模型做一次测评。<br><span class="en">Today: run your own LLM evaluation from YOUR perspective.</span></div>
   </section>
 
-  <section class="slide">
+    <section class="slide" style="background:linear-gradient(180deg,#fefce8 0,#eef2f5 100%);border-top:3px solid #f59e0b">
+    <div class="eyebrow" style="color:#d97706">Day1 Checkpoint · 停下来想一想</div>
+    <h2>在动手之前，确认你理清了这些</h2>
+    <p class="en">Before you start -- make sure you can answer these.</p>
+    <div class="list" style="margin-top:10px">
+      <div class="item"><span class="dot" style="background:#f59e0b"></span><span><b>排行榜 Elo 分数能告诉你什么？不能告诉你什么？</b><br>能：综合盲投偏好。不能：你在意的具体场景里谁更好。</span></div>
+      <div class="item"><span class="dot" style="background:#f59e0b"></span><span><b>HumanEval 和 GPQA 分别测什么？为什么两个都要？</b><br>一个测写代码，一个测科学推理。不同任务需不同尺子。</span></div>
+      <div class="item"><span class="dot" style="background:#f59e0b"></span><span><b>你要测什么 -- 现在定 5 个任务题目。</b><br>从你自己的生活/学习出发。一句话说清每个任务测什么能力。</span></div>
+      <div class="item"><span class="dot" style="background:#f59e0b"></span><span><b>你怎么评价模型的回答？谁来打分？</b><br>不是凭感觉。给 1-5 分，写出理由。你可以自己当裁判，也可以拉别人盲评，但必须留评分依据。</span></div>
+    </div>
+  </section>
+
+
+<section class="slide">
     <div class="eyebrow">Day1 · Model Evaluation</div>
     <h2>不看排行榜·你做裁判：从你的需求出发建立模型选型证据</h2>
     <p class="en">Build model selection evidence on your own terms.</p>
@@ -319,6 +332,19 @@ Constraint: q 不超过 80 字。</div>
     <div class="quote" style="font-size:24px;margin-top:10px;padding:14px 20px">Schema = 你和模型之间的格式合同。Eval = 写完 Prompt 之后必须做的测试。<br><span class="en">Schema = format contract. Eval = mandatory testing after writing prompts.</span></div>
   </section>
 
+  <section class="slide" style="background:linear-gradient(180deg,#fefce8 0,#eef2f5 100%);border-top:3px solid #f59e0b">
+    <div class="eyebrow" style="color:#d97706">Day2 Checkpoint · 停下来想一想</div>
+    <h2>在动手之前，确认你理清了这些</h2>
+    <p class="en">Before you start -- make sure you can answer these.</p>
+    <div class="list" style="margin-top:10px">
+      <div class="item"><span class="dot" style="background:#f59e0b"></span><span><b>Prompt 控制格式 vs 提升质量 -- 区别在哪？各举一例。</b><br>格式：不输出 JSON 没法解析。质量：指定受众和语言要求，输出自然适配。</span></div>
+      <div class="item"><span class="dot" style="background:#f59e0b"></span><span><b>模型不知道你什么信息？你要把什么打进 Context？</b><br>课程资料、设备限制、用户场景、Day1 选型结果 -- 模型全不知道。</span></div>
+      <div class="item"><span class="dot" style="background:#f59e0b"></span><span><b>Schema 是建议还是约束？为什么？</b><br>是可强制执行的技术约束。喂给 API 后，模型不可能输出错误字段名。</span></div>
+      <div class="item"><span class="dot" style="background:#f59e0b"></span><span><b>Prompt + Context + Schema + Eval 怎么串在一起用？</b><br>Prompt 告诉模型做什么，Context 打包模型不知道的信息，Schema 约束输出格式，Eval 验证跑出来的结果对不对。四件套缺一不可。</span></div>
+    </div>
+  </section>
+
+
 <section class="slide">
     <div class="eyebrow">Day2 · Prompt-to-Product</div>
     <h2>把选好的模型封装成能力模块</h2>
@@ -461,6 +487,19 @@ write_file("latest_reply.txt")</div>
   </section>
 
 
+  <section class="slide" style="background:linear-gradient(180deg,#fefce8 0,#eef2f5 100%);border-top:3px solid #f59e0b">
+    <div class="eyebrow" style="color:#d97706">Day3 Checkpoint · 停下来想一想</div>
+    <h2>在动手之前，确认你理清了这些</h2>
+    <p class="en">Before you start -- make sure you can answer these.</p>
+    <div class="list" style="margin-top:10px">
+      <div class="item"><span class="dot" style="background:#f59e0b"></span><span><b>你要让 Agent 完成什么任务？</b><br>不是模糊描述。具体说清楚：Agent 输入什么？输出什么？写哪些文件？</span></div>
+      <div class="item"><span class="dot" style="background:#f59e0b"></span><span><b>你的 Agent 需要哪些工具？</b><br>列出至少 3 个：list_files？read_file？search/RAG？write_file？为什么需要它们？</span></div>
+      <div class="item"><span class="dot" style="background:#f59e0b"></span><span><b>Agent 的 workspace 里会有什么？</b><br>你要给它什么资料作为 RAG 检索的知识源？它会在哪里写结果？</span></div>
+      <div class="item"><span class="dot" style="background:#f59e0b"></span><span><b>ReAct 循环在你的场景里怎么跑？</b><br>想一个具体例子：用户发送意图后，Agent 的 Think-Act-Observe 循环跑了几轮？每轮做了什么？</span></div>
+    </div>
+  </section>
+
+
 <section class="slide">
     <div class="eyebrow">Day3 · Desktop Agent</div>
     <h2>构建能在 workspace 里执行任务的桌面 Agent</h2>
@@ -557,6 +596,19 @@ Agent: list_files → read_file →
  "summary": "今天讲了..."}</div>
     </div>
   </section>
+
+  <section class="slide" style="background:linear-gradient(180deg,#fefce8 0,#eef2f5 100%);border-top:3px solid #f59e0b">
+    <div class="eyebrow" style="color:#d97706">Day4 Checkpoint · 停下来想一想</div>
+    <h2>在动手之前，确认你理清了这些</h2>
+    <p class="en">Before you start -- make sure you can answer these.</p>
+    <div class="list" style="margin-top:10px">
+      <div class="item"><span class="dot" style="background:#f59e0b"></span><span><b>Day1-Day3 你已经做了什么？</b><br>Day1：模型路由表。Day2：Prompt/Schema/Eval 能力模块。Day3：能跑通的 ReAct Agent。Day4 要把它们串起来。</span></div>
+      <div class="item"><span class="dot" style="background:#f59e0b"></span><span><b>M5Stack S3 在链路里起了什么作用？</b><br>它不跑模型，不做推理。它只是触发器和显示器。所有"智能"在电脑端。</span></div>
+      <div class="item"><span class="dot" style="background:#f59e0b"></span><span><b>完整的通信链路是什么？</b><br>画出来：哪里触发？走什么协议？谁接收？谁处理？谁返回？返回到哪里显示？</span></div>
+      <div class="item"><span class="dot" style="background:#f59e0b"></span><span><b>如果没有 M5Stack，能用什么替代？</b><br>微信消息触发也是完整方案。核心不是硬件 -- 是设备→API→Agent 这条链路。</span></div>
+    </div>
+  </section>
+
 
 <section class="slide">
     <div class="eyebrow">Day4 · Real Device Entry</div>
