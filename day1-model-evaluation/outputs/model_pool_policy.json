@@ -1,50 +1,105 @@
 {
-  "generated_at": "2026-06-22T15:07:55",
-  "provider": "SiliconFlow",
-  "policy_version": "3.0",
-  "scoring_method": "5维加权评分（完整性+准确性+结构性+深度+可用性）",
+  "generated_at": "2026-06-22T21:42:24",
+  "provider": "ScheduleBench",
+  "policy_version": "1.0",
+  "scoring_method": "AI自动5维评分(每维0-20分)",
   "model_pool": {
     "total_models": 5,
-    "text_models": 3,
-    "vision_models": 2,
     "models": [
       {
-        "label": "DeepSeek-V3.2",
-        "model_id": "deepseek-ai/DeepSeek-V3.2",
-        "capability": "text"
+        "label": "DeepSeek-V3",
+        "model_id": "schedule-bench/DeepSeek-V3"
       },
       {
-        "label": "DeepSeek-V4-Flash",
-        "model_id": "deepseek-ai/DeepSeek-V4-Flash",
-        "capability": "text"
+        "label": "智谱 GLM-4 9B",
+        "model_id": "schedule-bench/智谱 GLM-4 9B"
       },
       {
-        "label": "Qwen3-VL-32B",
-        "model_id": "Qwen/Qwen3-VL-32B-Instruct",
-        "capability": "vision"
+        "label": "豆包 Seed 36B",
+        "model_id": "schedule-bench/豆包 Seed 36B"
       },
       {
-        "label": "Qwen3-VL-8B",
-        "model_id": "Qwen/Qwen3-VL-8B-Instruct",
-        "capability": "vision"
+        "label": "通义千问2.5 14B",
+        "model_id": "schedule-bench/通义千问2.5 14B"
       },
       {
-        "label": "Qwen3.6-27B",
-        "model_id": "Qwen/Qwen3.6-27B",
-        "capability": "text"
+        "label": "通义千问2.5 32B",
+        "model_id": "schedule-bench/通义千问2.5 32B"
       }
     ]
   },
   "selection_rules": {
-    "text_planning": "优先文本模型",
-    "vision": "强制视觉模型",
-    "fallback": "DeepSeek-V4-Flash通用兜底"
+    "scheduling": "优先使用综合排期能力最强的模型",
+    "fallback": "场景切换时降级至通用排期模型"
   },
   "tasks": [
-    "团队任务分配与排期",
-    "多人会议时间协调",
-    "项目风险识别与应对",
-    "代码安全与质量审查",
-    "日程表图像识别提取"
-  ]
+    "简单线性排期（4人×3任务）",
+    "多依赖任务链排期",
+    "资源冲突场景排期",
+    "紧截止日期排期",
+    "多人多技能约束排期",
+    "并行任务最大化排期",
+    "动态优先级调整排期",
+    "跨周长期排期",
+    "成员不可用时段约束",
+    "复杂综合场景排期",
+    "综合排期能力（10场景均值）"
+  ],
+  "evaluation_summary": {
+    "schedule_r1": {
+      "title": "简单线性排期（4人×3任务）",
+      "best_model": "豆包 Seed 36B",
+      "best_score": 4
+    },
+    "schedule_r2": {
+      "title": "多依赖任务链排期",
+      "best_model": "通义千问2.5 32B",
+      "best_score": 4
+    },
+    "schedule_r3": {
+      "title": "资源冲突场景排期",
+      "best_model": "通义千问2.5 32B",
+      "best_score": 3
+    },
+    "schedule_r4": {
+      "title": "紧截止日期排期",
+      "best_model": "通义千问2.5 14B",
+      "best_score": 3
+    },
+    "schedule_r5": {
+      "title": "多人多技能约束排期",
+      "best_model": "通义千问2.5 14B",
+      "best_score": 3
+    },
+    "schedule_r6": {
+      "title": "并行任务最大化排期",
+      "best_model": "通义千问2.5 32B",
+      "best_score": 3
+    },
+    "schedule_r7": {
+      "title": "动态优先级调整排期",
+      "best_model": "豆包 Seed 36B",
+      "best_score": 4
+    },
+    "schedule_r8": {
+      "title": "跨周长期排期",
+      "best_model": "DeepSeek-V3",
+      "best_score": 4
+    },
+    "schedule_r9": {
+      "title": "成员不可用时段约束",
+      "best_model": "DeepSeek-V3",
+      "best_score": 4
+    },
+    "schedule_r10": {
+      "title": "复杂综合场景排期",
+      "best_model": "通义千问2.5 14B",
+      "best_score": 3
+    },
+    "schedule_overall": {
+      "title": "综合排期能力（10场景均值）",
+      "best_model": "DeepSeek-V3",
+      "best_score": 5
+    }
+  }
 }

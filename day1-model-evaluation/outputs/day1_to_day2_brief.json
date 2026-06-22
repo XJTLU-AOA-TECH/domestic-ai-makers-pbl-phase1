@@ -1,42 +1,42 @@
 {
-  "generated_at": "2026-06-22T15:07:55",
-  "purpose": "基于5维分项评分的差异化模型路由",
+  "generated_at": "2026-06-22T21:42:24",
+  "purpose": "基于ScheduleBench排期评测结果的模型路由",
   "router": {
     "product_planner": {
-      "preferred_model": "DeepSeek-V3.2",
-      "score": 4,
-      "fallback_rule": "切换至Qwen3-VL-32B",
-      "evidence_task": "team_task_001"
+      "preferred_model": "DeepSeek-V3",
+      "score": 5,
+      "fallback_rule": "切换至综合排名第二的模型",
+      "evidence_task": "schedule_overall"
     },
     "context_designer": {
-      "preferred_model": "DeepSeek-V4-Flash",
-      "score": 5,
-      "fallback_rule": "切换至Qwen3-VL-8B",
-      "evidence_task": "meeting_coord_001"
+      "preferred_model": "豆包 Seed 36B",
+      "score": 4,
+      "fallback_rule": "切换至通义千问2.5 32B",
+      "evidence_task": "schedule_r1"
     },
     "schema_generator": {
-      "preferred_model": "DeepSeek-V4-Flash",
+      "preferred_model": "通义千问2.5 14B",
       "score": 3,
-      "fallback_rule": "切换至Qwen3-VL-8B",
-      "evidence_task": "project_risk_001"
+      "fallback_rule": "切换至通义千问2.5 14B",
+      "evidence_task": "schedule_r5"
     },
     "code_assistant": {
-      "preferred_model": "DeepSeek-V4-Flash",
-      "score": 4,
-      "fallback_rule": "切换至Qwen3-VL-8B",
-      "evidence_task": "code_review_001"
+      "preferred_model": "通义千问2.5 32B",
+      "score": 3,
+      "fallback_rule": "切换至豆包 Seed 36B",
+      "evidence_task": "schedule_r3"
     },
     "risk_checker": {
-      "preferred_model": "Qwen3-VL-8B",
-      "score": 4,
-      "fallback_rule": "独立审查模型，与code_assistant(DeepSeek-V4-Flash)不同",
-      "evidence_task": "code_review_001"
+      "preferred_model": "通义千问2.5 14B",
+      "score": 3,
+      "fallback_rule": "独立审查模型，与code_assistant(通义千问2.5 32B)不同",
+      "evidence_task": "schedule_r4"
     },
     "multimodal_context": {
-      "preferred_model": "Qwen3-VL-8B",
-      "score": 5,
-      "fallback_rule": "视觉模型，切换至Qwen3-VL-32B",
-      "evidence_task": "schedule_vision_001"
+      "preferred_model": "通义千问2.5 14B",
+      "score": 3,
+      "fallback_rule": "复杂场景优先使用综合能力最强模型",
+      "evidence_task": "schedule_r10"
     }
   }
 }

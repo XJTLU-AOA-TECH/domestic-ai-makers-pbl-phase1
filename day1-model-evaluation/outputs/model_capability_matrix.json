@@ -1,1520 +1,2352 @@
 {
-  "generated_at": "2026-06-22T15:07:55",
-  "arena_name": "国产大模型能力评估（5维分项评分）",
-  "scoring_standard": "5维度加权评分：完整性25% + 准确性25% + 结构性20% + 深度20% + 可用性10%。每维度1-5分，加权得总分。",
-  "rubrics": {
-    "team_task_001": {
-      "title": "团队任务分配与排期",
-      "dimensions": {
-        "成员覆盖": {
-          "weight": 0.25,
-          "desc": "是否覆盖了全部4个成员",
-          "scoring": {
-            "5": "全部4个成员都有独立任务描述",
-            "3": "覆盖3个成员",
-            "1": "只提到1-2个成员"
-          }
-        },
-        "任务具体性": {
-          "weight": 0.3,
-          "desc": "任务描述是否具体（含工时、交付物、截止日）",
-          "scoring": {
-            "5": "每个任务都有工时+交付物+截止日",
-            "3": "有任务列表但缺少工时或截止日",
-            "1": "只有笼统职责，无具体可执行项"
-          }
-        },
-        "时间线合理性": {
-          "weight": 0.2,
-          "desc": "2周时间线是否可行，里程碑是否合理",
-          "scoring": {
-            "5": "天级别时间线+里程碑+依赖关系明确",
-            "3": "有周级别时间线但缺少里程碑",
-            "1": "时间线不可行或缺失"
-          }
-        },
-        "风险管理": {
-          "weight": 0.15,
-          "desc": "是否识别了风险并给出应对方案",
-          "scoring": {
-            "5": "识别3+风险且有具体应对措施",
-            "3": "识别了风险但应对措施笼统",
-            "1": "未提及风险"
-          }
-        },
-        "结构可读性": {
-          "weight": 0.1,
-          "desc": "输出格式是否清晰（表格/列表/分段）",
-          "scoring": {
-            "5": "表格+分段落，一目了然",
-            "3": "有分段但不够清晰",
-            "1": "纯文字堆砌"
-          }
-        }
-      }
+  "generated_at": "2026-06-22T21:42:24",
+  "arena_name": "ScheduleBench排期能力评测 — 5大模型 × 10场景",
+  "scoring_standard": "5维评分每维满分20分(AI自动评分)，汇总后归一化至1-5分制",
+  "dimensions": {
+    "时间安排合理性": {
+      "desc": "时间分配是否合理，是否考虑了成员空闲时间",
+      "max_raw": 20
     },
-    "meeting_coord_001": {
-      "title": "多人会议时间协调",
-      "dimensions": {
-        "成员覆盖": {
-          "weight": 0.2,
-          "desc": "是否覆盖全部5个成员的时间",
-          "scoring": {
-            "5": "全部5人时间都有体现",
-            "3": "覆盖3-4人",
-            "1": "只覆盖1-2人"
-          }
-        },
-        "会议方案完整": {
-          "weight": 0.35,
-          "desc": "是否满足了全员会+分组会+评审会需求",
-          "scoring": {
-            "5": "3种会议全部安排且有具体时间",
-            "3": "安排了2种会议",
-            "1": "只有1种或未给出具体时间"
-          }
-        },
-        "约束满足": {
-          "weight": 0.25,
-          "desc": "是否遵守了约束（避免晚9点+周末）",
-          "scoring": {
-            "5": "所有约束都满足且有说明",
-            "3": "大部分满足但对某些约束处理含糊",
-            "1": "明显违反约束"
-          }
-        },
-        "冲突处理": {
-          "weight": 0.1,
-          "desc": "是否识别了时间冲突并给出替代方案",
-          "scoring": {
-            "5": "明确指出冲突+给出替代方案",
-            "3": "提到冲突但无替代",
-            "1": "未提及冲突"
-          }
-        },
-        "表格化输出": {
-          "weight": 0.1,
-          "desc": "是否用表格展示会议负荷",
-          "scoring": {
-            "5": "清晰的表格+每个成员会议次数",
-            "3": "有表格但缺少汇总",
-            "1": "无表格"
-          }
-        }
-      }
+    "任务依赖完整性": {
+      "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+      "max_raw": 20
     },
-    "project_risk_001": {
-      "title": "项目风险识别与应对",
-      "dimensions": {
-        "风险数量": {
-          "weight": 0.3,
-          "desc": "是否识别了足够数量和类型的风险",
-          "scoring": {
-            "5": "识别5+风险且类型多样（技术/人员/进度/预算）",
-            "3": "识别3-4个风险",
-            "1": "少于3个风险"
-          }
-        },
-        "严重度排序": {
-          "weight": 0.2,
-          "desc": "是否按严重程度/优先级排序",
-          "scoring": {
-            "5": "有明确的排序+每项标注严重度",
-            "3": "有排序但无严重度标注",
-            "1": "无序排列"
-          }
-        },
-        "应对措施": {
-          "weight": 0.3,
-          "desc": "每个风险是否有可操作的应对措施",
-          "scoring": {
-            "5": "每项有具体应对措施+负责人建议",
-            "3": "有应对但较笼统",
-            "1": "无应对或只说'注意'"
-          }
-        },
-        "行动建议": {
-          "weight": 0.1,
-          "desc": "是否给出了优先行动建议",
-          "scoring": {
-            "5": "3条具体可执行的优先建议",
-            "3": "有建议但不够具体",
-            "1": "无行动建议"
-          }
-        },
-        "量化分析": {
-          "weight": 0.1,
-          "desc": "是否包含概率/影响等量化信息",
-          "scoring": {
-            "5": "有概率*影响的量化矩阵",
-            "3": "有初步量化尝试",
-            "1": "纯定性描述"
-          }
-        }
-      }
+    "资源分配均衡度": {
+      "desc": "各成员的工作量是否均衡，有无过载或闲置",
+      "max_raw": 20
     },
-    "code_review_001": {
-      "title": "代码安全与质量审查",
-      "dimensions": {
-        "SQL注入识别": {
-          "weight": 0.3,
-          "desc": "是否准确识别SQL注入漏洞并给出修复",
-          "scoring": {
-            "5": "准确识别+给出参数化查询修复代码",
-            "3": "提到SQL注入但修复方案不完整",
-            "1": "未识别SQL注入"
-          }
-        },
-        "其他安全": {
-          "weight": 0.25,
-          "desc": "是否识别debug模式/敏感信息/资源泄漏等",
-          "scoring": {
-            "5": "识别4+安全问题+逐条说明风险",
-            "3": "识别2-3个安全问题",
-            "1": "只识别1个或无"
-          }
-        },
-        "修复方案质量": {
-          "weight": 0.2,
-          "desc": "修复方案是否可执行（含代码）",
-          "scoring": {
-            "5": "逐条给出修复代码+说明原理",
-            "3": "有修复建议但缺代码",
-            "1": "只说'需要修复'无具体方案"
-          }
-        },
-        "代码质量维度": {
-          "weight": 0.15,
-          "desc": "是否覆盖了资源管理/异常处理等",
-          "scoring": {
-            "5": "覆盖资源泄漏+异常处理+最佳实践",
-            "3": "覆盖部分质量维度",
-            "1": "未涉及代码质量"
-          }
-        },
-        "结构化审查报告": {
-          "weight": 0.1,
-          "desc": "输出是否结构化（分类/表格/编号）",
-          "scoring": {
-            "5": "分安全+质量+修复三板块，表格化",
-            "3": "有分类但格式不统一",
-            "1": "纯文字无结构"
-          }
-        }
-      }
+    "约束条件满足度": {
+      "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+      "max_raw": 20
     },
-    "schedule_vision_001": {
-      "title": "日程表图像识别提取",
-      "dimensions": {
-        "OCR准确度": {
-          "weight": 0.3,
-          "desc": "提取的时间+事件是否准确",
-          "scoring": {
-            "5": "8+条目准确，时间+事件+地点完整",
-            "3": "4-7条目，部分信息准确",
-            "1": "少于4条或大量错误"
-          }
-        },
-        "结构化输出": {
-          "weight": 0.25,
-          "desc": "是否输出JSON/结构化格式",
-          "scoring": {
-            "5": "完整JSON+所有字段齐全",
-            "3": "有JSON但字段不完整",
-            "1": "纯文本无结构化"
-          }
-        },
-        "日程分类": {
-          "weight": 0.2,
-          "desc": "是否对条目做了分类（课程/会议/任务等）",
-          "scoring": {
-            "5": "所有条目有category+schedule_type正确",
-            "3": "部分有分类",
-            "1": "无分类"
-          }
-        },
-        "冲突检测": {
-          "weight": 0.15,
-          "desc": "是否指出了日程中的时间冲突",
-          "scoring": {
-            "5": "明确指出冲突+具体时间段",
-            "3": "提到可能有冲突但未具体说明",
-            "1": "无冲突检测"
-          }
-        },
-        "完整度": {
-          "weight": 0.1,
-          "desc": "条目数量是否覆盖了图片中的大部分信息",
-          "scoring": {
-            "5": "提取了80%+可见条目",
-            "3": "提取了50-80%",
-            "1": "少于50%"
-          }
-        }
-      }
+    "可执行性与粒度": {
+      "desc": "任务拆分是否足够细、能否直接执行",
+      "max_raw": 20
     }
   },
   "models": [
     {
-      "label": "DeepSeek-V3.2",
-      "id": "deepseek-ai/DeepSeek-V3.2",
+      "label": "DeepSeek-V3",
+      "id": "schedule-bench/DeepSeek-V3",
       "capability": "text"
     },
     {
-      "label": "DeepSeek-V4-Flash",
-      "id": "deepseek-ai/DeepSeek-V4-Flash",
+      "label": "智谱 GLM-4 9B",
+      "id": "schedule-bench/智谱 GLM-4 9B",
       "capability": "text"
     },
     {
-      "label": "Qwen3-VL-32B",
-      "id": "Qwen/Qwen3-VL-32B-Instruct",
-      "capability": "vision"
+      "label": "豆包 Seed 36B",
+      "id": "schedule-bench/豆包 Seed 36B",
+      "capability": "text"
     },
     {
-      "label": "Qwen3-VL-8B",
-      "id": "Qwen/Qwen3-VL-8B-Instruct",
-      "capability": "vision"
+      "label": "通义千问2.5 14B",
+      "id": "schedule-bench/通义千问2.5 14B",
+      "capability": "text"
     },
     {
-      "label": "Qwen3.6-27B",
-      "id": "Qwen/Qwen3.6-27B",
+      "label": "通义千问2.5 32B",
+      "id": "schedule-bench/通义千问2.5 32B",
       "capability": "text"
     }
   ],
   "tasks": [
     {
-      "id": "team_task_001",
-      "title": "团队任务分配与排期",
+      "id": "schedule_r1",
+      "title": "简单线性排期（4人×3任务）",
       "type": "text",
-      "prompt": "你是一个团队协作助手。4人团队需要在2周内完成一个产品原型，成员情况：\n- 张三：后端开发(Python)，周一/四下午有空\n- 李四：前端+UI设计(React/Figma)，周二/五全天\n- 王五：数据分析(Pandas/SQL)，工作日白天(周三上午有课)\n- 组长：项目管理+文档，晚上和周末\n请输出：A.每人具体任务+工时+截止日 B.2周时间线 C.3次同步会议时间 D.2个协作风险及应对。",
-      "checks": [
-        "任务分配",
-        "时间线",
-        "会议安排",
-        "风险识别",
-        "工时估算"
-      ]
+      "round": "R1",
+      "prompt": "ScheduleBench排期任务-R1",
+      "rubric": "基于5维评分：时间安排、任务依赖、资源分配、约束满足、可执行性"
     },
     {
-      "id": "meeting_coord_001",
-      "title": "多人会议时间协调",
+      "id": "schedule_r2",
+      "title": "多依赖任务链排期",
       "type": "text",
-      "prompt": "你是一个日程协调助手。5人团队需下周安排会议，成员可用时间：\n-Alice: 周一2-5pm,周三10am-12pm,周四3-6pm,周五全天\n-Bob: 周二/四下午2-5pm,周三晚7-9pm,周六上午\n-Carol: 周一/三/五上午9-12am,周二下午\n-Dave: 周四/五下午,周日下午,每晚9-11pm\n-Eve: 周一全天,周二上午,周三下午2-5pm,周六下午\n约束：至少1次全员会(>=1h)，前端组(Alice+Bob)需2次结对会(>=45min)，文档组(Carol+Dave)需1次评审(>=30min)，避免晚9点后和周末。请输出最优方案。",
-      "checks": [
-        "全员会议",
-        "分组会议",
-        "时间具体",
-        "冲突处理",
-        "替代方案"
-      ]
+      "round": "R2",
+      "prompt": "ScheduleBench排期任务-R2",
+      "rubric": "基于5维评分：时间安排、任务依赖、资源分配、约束满足、可执行性"
     },
     {
-      "id": "project_risk_001",
-      "title": "项目风险识别与应对",
+      "id": "schedule_r3",
+      "title": "资源冲突场景排期",
       "type": "text",
-      "prompt": "你是一个项目管理顾问。一个5人团队正在开发一个移动App，项目周期8周，已进行到第3周。当前状况：\n- 后端进度延迟1周(核心API未完成)\n- 前端设计师下周请产假(需交接)\n- 预算已使用55%\n- 需求文档有3处模糊待澄清\n- 测试环境不稳定，频繁宕机\n请：A.识别至少5个风险(按严重度排序) B.每个风险的应对措施 C.给项目经理的3条优先行动建议。",
-      "checks": [
-        "风险识别",
-        "严重度排序",
-        "应对措施",
-        "行动建议",
-        "量化分析"
-      ]
+      "round": "R3",
+      "prompt": "ScheduleBench排期任务-R3",
+      "rubric": "基于5维评分：时间安排、任务依赖、资源分配、约束满足、可执行性"
     },
     {
-      "id": "code_review_001",
-      "title": "代码安全与质量审查",
+      "id": "schedule_r4",
+      "title": "紧截止日期排期",
       "type": "text",
-      "prompt": "审查以下Python代码的安全和质量问题：\n```python\nfrom flask import Flask, request, jsonify\nimport sqlite3\napp = Flask(__name__)\n@app.route('/api/search')\ndef search():\n    q = request.args.get('q','')\n    conn = sqlite3.connect('db.sqlite3')\n    cur = conn.cursor()\n    cur.execute(f\"SELECT * FROM items WHERE name LIKE '%{q}%'\")\n    rows = cur.fetchall()\n    return jsonify([{'id':r[0],'name':r[1],'owner':r[2]} for r in rows])\nif __name__=='__main__':\n    app.run(debug=True)\n```\n请指出：A.安全问题(至少3个) B.代码质量问题(至少2个) C.逐条修复方案。",
-      "checks": [
-        "SQL注入",
-        "敏感信息",
-        "debug模式",
-        "资源泄漏",
-        "修复代码"
-      ]
+      "round": "R4",
+      "prompt": "ScheduleBench排期任务-R4",
+      "rubric": "基于5维评分：时间安排、任务依赖、资源分配、约束满足、可执行性"
     },
     {
-      "id": "schedule_vision_001",
-      "title": "日程表图像识别提取",
-      "type": "vision",
-      "prompt": "请识别这张日程表/时间表图片中的所有条目，用JSON格式输出：{\"type\":\"周计划/课程表/会议表\",\"entries\":[{\"day\":\"...\",\"time\":\"...\",\"event\":\"...\",\"category\":\"课程/会议/任务\"},...],\"conflicts\":[...],\"summary\":\"...\"}",
-      "checks": [
-        "OCR准确",
-        "JSON格式",
-        "冲突检测",
-        "日程分类",
-        "数量完整"
-      ]
+      "id": "schedule_r5",
+      "title": "多人多技能约束排期",
+      "type": "text",
+      "round": "R5",
+      "prompt": "ScheduleBench排期任务-R5",
+      "rubric": "基于5维评分：时间安排、任务依赖、资源分配、约束满足、可执行性"
+    },
+    {
+      "id": "schedule_r6",
+      "title": "并行任务最大化排期",
+      "type": "text",
+      "round": "R6",
+      "prompt": "ScheduleBench排期任务-R6",
+      "rubric": "基于5维评分：时间安排、任务依赖、资源分配、约束满足、可执行性"
+    },
+    {
+      "id": "schedule_r7",
+      "title": "动态优先级调整排期",
+      "type": "text",
+      "round": "R7",
+      "prompt": "ScheduleBench排期任务-R7",
+      "rubric": "基于5维评分：时间安排、任务依赖、资源分配、约束满足、可执行性"
+    },
+    {
+      "id": "schedule_r8",
+      "title": "跨周长期排期",
+      "type": "text",
+      "round": "R8",
+      "prompt": "ScheduleBench排期任务-R8",
+      "rubric": "基于5维评分：时间安排、任务依赖、资源分配、约束满足、可执行性"
+    },
+    {
+      "id": "schedule_r9",
+      "title": "成员不可用时段约束",
+      "type": "text",
+      "round": "R9",
+      "prompt": "ScheduleBench排期任务-R9",
+      "rubric": "基于5维评分：时间安排、任务依赖、资源分配、约束满足、可执行性"
+    },
+    {
+      "id": "schedule_r10",
+      "title": "复杂综合场景排期",
+      "type": "text",
+      "round": "R10",
+      "prompt": "ScheduleBench排期任务-R10",
+      "rubric": "基于5维评分：时间安排、任务依赖、资源分配、约束满足、可执行性"
+    },
+    {
+      "id": "schedule_overall",
+      "title": "综合排期能力（10场景均值）",
+      "type": "text",
+      "round": "聚合均值",
+      "prompt": "ScheduleBench全场景综合评测",
+      "rubric": "10个排期场景的5维评分均值"
     }
   ],
   "matrix": [
     {
-      "model_label": "DeepSeek-V3.2",
-      "model_id": "deepseek-ai/DeepSeek-V3.2",
+      "model_label": "DeepSeek-V3",
+      "model_id": "schedule-bench/DeepSeek-V3",
       "capability": "text",
-      "vendor": "DeepSeek",
-      "desc": "DeepSeek V3.2，综合能力强，结构化输出好",
-      "avg_score": 3,
-      "avg_latency_seconds": 76.17,
-      "avg_total_tokens": 1372.5,
+      "vendor": "ScheduleBench",
+      "desc": "ScheduleBench排期评测 - 11个场景",
+      "avg_score": 3.45,
+      "avg_latency_seconds": 0,
+      "avg_total_tokens": 0,
       "task_scores": {
-        "team_task_001": 4,
-        "meeting_coord_001": 3,
-        "project_risk_001": 3,
-        "code_review_001": 4,
-        "schedule_vision_001": 1
+        "schedule_r1": 3,
+        "schedule_r2": 4,
+        "schedule_r3": 3,
+        "schedule_r4": 3,
+        "schedule_r5": 3,
+        "schedule_r6": 3,
+        "schedule_r7": 3,
+        "schedule_r8": 4,
+        "schedule_r9": 4,
+        "schedule_r10": 3,
+        "schedule_overall": 5
+      },
+      "dimension_avgs": {
+        "时间安排合理性": 3.4,
+        "任务依赖完整性": 3.2,
+        "资源分配均衡度": 3.3,
+        "约束条件满足度": 3.6,
+        "可执行性与粒度": 3.3
       },
       "strengths": [
-        "团队任务分配与排期",
-        "代码安全与质量审查"
-      ],
-      "risks": [
-        "日程表图像识别提取"
-      ],
-      "recommendation": [
-        "任务分配",
-        "代码审查"
-      ],
-      "score_details": {
-        "team_task_001": {
-          "成员覆盖": 5,
-          "任务具体性": 5,
-          "时间线合理性": 3,
-          "风险管理": 3,
-          "结构可读性": 3
-        },
-        "meeting_coord_001": {
-          "成员覆盖": 5,
-          "会议方案完整": 1,
-          "约束满足": 5,
-          "冲突处理": 1,
-          "表格化输出": 1
-        },
-        "project_risk_001": {
-          "风险数量": 1,
-          "严重度排序": 3,
-          "应对措施": 5,
-          "行动建议": 5,
-          "量化分析": 3
-        },
-        "code_review_001": {
-          "SQL注入识别": 5,
-          "其他安全": 5,
-          "修复方案质量": 3,
-          "代码质量维度": 5,
-          "结构化审查报告": 3
-        },
-        "schedule_vision_001": {
-          "能力限制": 1
-        }
-      }
-    },
-    {
-      "model_label": "DeepSeek-V4-Flash",
-      "model_id": "deepseek-ai/DeepSeek-V4-Flash",
-      "capability": "text",
-      "vendor": "DeepSeek",
-      "desc": "DeepSeek V4 Flash，代码和逻辑推理强，速度快",
-      "avg_score": 3.4,
-      "avg_latency_seconds": 59.45,
-      "avg_total_tokens": 1704,
-      "task_scores": {
-        "team_task_001": 4,
-        "meeting_coord_001": 5,
-        "project_risk_001": 3,
-        "code_review_001": 4,
-        "schedule_vision_001": 1
-      },
-      "strengths": [
-        "团队任务分配与排期",
-        "多人会议时间协调",
-        "代码安全与质量审查"
-      ],
-      "risks": [
-        "日程表图像识别提取"
-      ],
-      "recommendation": [
-        "任务分配",
-        "日程协调",
-        "代码审查"
-      ],
-      "score_details": {
-        "team_task_001": {
-          "成员覆盖": 5,
-          "任务具体性": 3,
-          "时间线合理性": 3,
-          "风险管理": 3,
-          "结构可读性": 5
-        },
-        "meeting_coord_001": {
-          "成员覆盖": 5,
-          "会议方案完整": 5,
-          "约束满足": 5,
-          "冲突处理": 1,
-          "表格化输出": 5
-        },
-        "project_risk_001": {
-          "风险数量": 1,
-          "严重度排序": 3,
-          "应对措施": 5,
-          "行动建议": 5,
-          "量化分析": 3
-        },
-        "code_review_001": {
-          "SQL注入识别": 5,
-          "其他安全": 5,
-          "修复方案质量": 1,
-          "代码质量维度": 5,
-          "结构化审查报告": 3
-        },
-        "schedule_vision_001": {
-          "能力限制": 1
-        }
-      }
-    },
-    {
-      "model_label": "Qwen3-VL-32B",
-      "model_id": "Qwen/Qwen3-VL-32B-Instruct",
-      "capability": "vision",
-      "vendor": "Alibaba",
-      "desc": "通义千问VL 32B，强大多模态，高精度OCR",
-      "avg_score": 3.6,
-      "avg_latency_seconds": 64.31,
-      "avg_total_tokens": 1386.5,
-      "task_scores": {
-        "team_task_001": 5,
-        "meeting_coord_001": 1,
-        "project_risk_001": 3,
-        "schedule_vision_001": 5,
-        "code_review_001": 4
-      },
-      "strengths": [
-        "团队任务分配与排期",
-        "日程表图像识别提取",
-        "代码安全与质量审查"
-      ],
-      "risks": [
-        "多人会议时间协调"
-      ],
-      "recommendation": [
-        "任务分配",
-        "代码审查",
-        "图像识别"
-      ],
-      "score_details": {
-        "team_task_001": {
-          "成员覆盖": 5,
-          "任务具体性": 5,
-          "时间线合理性": 5,
-          "风险管理": 3,
-          "结构可读性": 5
-        },
-        "meeting_coord_001": {
-          "超时": 1
-        },
-        "project_risk_001": {
-          "风险数量": 1,
-          "严重度排序": 3,
-          "应对措施": 3,
-          "行动建议": 5,
-          "量化分析": 3
-        },
-        "schedule_vision_001": {
-          "OCR准确度": 5,
-          "结构化输出": 5,
-          "日程分类": 5,
-          "冲突检测": 5,
-          "完整度": 5
-        },
-        "code_review_001": {
-          "SQL注入识别": 5,
-          "其他安全": 5,
-          "修复方案质量": 1,
-          "代码质量维度": 5,
-          "结构化审查报告": 5
-        }
-      }
-    },
-    {
-      "model_label": "Qwen3-VL-8B",
-      "model_id": "Qwen/Qwen3-VL-8B-Instruct",
-      "capability": "vision",
-      "vendor": "Alibaba",
-      "desc": "通义千问VL 8B，轻量多模态，图文理解，速度极快",
-      "avg_score": 3.8,
-      "avg_latency_seconds": 15.21,
-      "avg_total_tokens": 1483.6,
-      "task_scores": {
-        "team_task_001": 4,
-        "meeting_coord_001": 3,
-        "project_risk_001": 3,
-        "code_review_001": 4,
-        "schedule_vision_001": 5
-      },
-      "strengths": [
-        "团队任务分配与排期",
-        "代码安全与质量审查",
-        "日程表图像识别提取"
+        "多依赖任务链排期",
+        "跨周长期排期",
+        "成员不可用时段约束",
+        "综合排期能力（10场景均值）"
       ],
       "risks": [],
       "recommendation": [
-        "任务分配",
-        "代码审查",
-        "图像识别"
-      ],
-      "score_details": {
-        "team_task_001": {
-          "成员覆盖": 5,
-          "任务具体性": 5,
-          "时间线合理性": 3,
-          "风险管理": 3,
-          "结构可读性": 5
-        },
-        "meeting_coord_001": {
-          "成员覆盖": 5,
-          "会议方案完整": 1,
-          "约束满足": 5,
-          "冲突处理": 5,
-          "表格化输出": 1
-        },
-        "project_risk_001": {
-          "风险数量": 1,
-          "严重度排序": 3,
-          "应对措施": 3,
-          "行动建议": 5,
-          "量化分析": 5
-        },
-        "code_review_001": {
-          "SQL注入识别": 5,
-          "其他安全": 5,
-          "修复方案质量": 1,
-          "代码质量维度": 5,
-          "结构化审查报告": 3
-        },
-        "schedule_vision_001": {
-          "OCR准确度": 5,
-          "结构化输出": 5,
-          "日程分类": 5,
-          "冲突检测": 5,
-          "完整度": 5
-        }
-      }
+        "排期规划"
+      ]
     },
     {
-      "model_label": "Qwen3.6-27B",
-      "model_id": "Qwen/Qwen3.6-27B",
+      "model_label": "智谱 GLM-4 9B",
+      "model_id": "schedule-bench/智谱 GLM-4 9B",
       "capability": "text",
-      "vendor": "Alibaba",
-      "desc": "通义千问3.6 27B，中文理解出色，但推理消耗大",
-      "avg_score": 2.2,
-      "avg_latency_seconds": 34.26,
-      "avg_total_tokens": 1695.5,
+      "vendor": "ScheduleBench",
+      "desc": "ScheduleBench排期评测 - 11个场景",
+      "avg_score": 2.82,
+      "avg_latency_seconds": 0,
+      "avg_total_tokens": 0,
       "task_scores": {
-        "team_task_001": 2,
-        "meeting_coord_001": 2,
-        "project_risk_001": 2,
-        "code_review_001": 4,
-        "schedule_vision_001": 1
+        "schedule_r1": 2,
+        "schedule_r2": 2,
+        "schedule_r3": 2,
+        "schedule_r4": 3,
+        "schedule_r5": 3,
+        "schedule_r6": 3,
+        "schedule_r7": 2,
+        "schedule_r8": 3,
+        "schedule_r9": 3,
+        "schedule_r10": 3,
+        "schedule_overall": 5
+      },
+      "dimension_avgs": {
+        "时间安排合理性": 2.9,
+        "任务依赖完整性": 2.9,
+        "资源分配均衡度": 2.5,
+        "约束条件满足度": 2.8,
+        "可执行性与粒度": 2.8
       },
       "strengths": [
-        "代码安全与质量审查"
+        "综合排期能力（10场景均值）"
       ],
       "risks": [
-        "团队任务分配与排期",
-        "多人会议时间协调",
-        "项目风险识别与应对",
-        "日程表图像识别提取"
+        "简单线性排期（4人×3任务）",
+        "多依赖任务链排期",
+        "资源冲突场景排期",
+        "动态优先级调整排期"
       ],
       "recommendation": [
-        "代码审查"
+        "需改进"
+      ]
+    },
+    {
+      "model_label": "豆包 Seed 36B",
+      "model_id": "schedule-bench/豆包 Seed 36B",
+      "capability": "text",
+      "vendor": "ScheduleBench",
+      "desc": "ScheduleBench排期评测 - 11个场景",
+      "avg_score": 3.64,
+      "avg_latency_seconds": 0,
+      "avg_total_tokens": 0,
+      "task_scores": {
+        "schedule_r1": 4,
+        "schedule_r2": 4,
+        "schedule_r3": 3,
+        "schedule_r4": 3,
+        "schedule_r5": 3,
+        "schedule_r6": 3,
+        "schedule_r7": 4,
+        "schedule_r8": 4,
+        "schedule_r9": 4,
+        "schedule_r10": 3,
+        "schedule_overall": 5
+      },
+      "dimension_avgs": {
+        "时间安排合理性": 3.5,
+        "任务依赖完整性": 3.5,
+        "资源分配均衡度": 3.2,
+        "约束条件满足度": 3.9,
+        "可执行性与粒度": 3.3
+      },
+      "strengths": [
+        "简单线性排期（4人×3任务）",
+        "多依赖任务链排期",
+        "动态优先级调整排期",
+        "跨周长期排期",
+        "成员不可用时段约束",
+        "综合排期能力（10场景均值）"
       ],
-      "score_details": {
-        "team_task_001": {
-          "成员覆盖": 5,
-          "任务具体性": 1,
-          "时间线合理性": 1,
-          "风险管理": 1,
-          "结构可读性": 3
-        },
-        "meeting_coord_001": {
-          "成员覆盖": 5,
-          "会议方案完整": 1,
-          "约束满足": 1,
-          "冲突处理": 1,
-          "表格化输出": 1
-        },
-        "project_risk_001": {
-          "风险数量": 1,
-          "严重度排序": 5,
-          "应对措施": 1,
-          "行动建议": 1,
-          "量化分析": 3
-        },
-        "code_review_001": {
-          "SQL注入识别": 5,
-          "其他安全": 5,
-          "修复方案质量": 3,
-          "代码质量维度": 5,
-          "结构化审查报告": 1
-        },
-        "schedule_vision_001": {
-          "能力限制": 1
-        }
-      }
+      "risks": [],
+      "recommendation": [
+        "排期规划"
+      ]
+    },
+    {
+      "model_label": "通义千问2.5 14B",
+      "model_id": "schedule-bench/通义千问2.5 14B",
+      "capability": "text",
+      "vendor": "ScheduleBench",
+      "desc": "ScheduleBench排期评测 - 11个场景",
+      "avg_score": 2.91,
+      "avg_latency_seconds": 0,
+      "avg_total_tokens": 0,
+      "task_scores": {
+        "schedule_r1": 3,
+        "schedule_r2": 3,
+        "schedule_r3": 2,
+        "schedule_r4": 3,
+        "schedule_r5": 3,
+        "schedule_r6": 3,
+        "schedule_r7": 3,
+        "schedule_r8": 1,
+        "schedule_r9": 3,
+        "schedule_r10": 3,
+        "schedule_overall": 5
+      },
+      "dimension_avgs": {
+        "时间安排合理性": 3.0,
+        "任务依赖完整性": 2.9,
+        "资源分配均衡度": 2.6,
+        "约束条件满足度": 2.6,
+        "可执行性与粒度": 2.6
+      },
+      "strengths": [
+        "综合排期能力（10场景均值）"
+      ],
+      "risks": [
+        "资源冲突场景排期",
+        "跨周长期排期"
+      ],
+      "recommendation": [
+        "需改进"
+      ]
+    },
+    {
+      "model_label": "通义千问2.5 32B",
+      "model_id": "schedule-bench/通义千问2.5 32B",
+      "capability": "text",
+      "vendor": "ScheduleBench",
+      "desc": "ScheduleBench排期评测 - 11个场景",
+      "avg_score": 3,
+      "avg_latency_seconds": 0,
+      "avg_total_tokens": 0,
+      "task_scores": {
+        "schedule_r1": 2,
+        "schedule_r2": 4,
+        "schedule_r3": 3,
+        "schedule_r4": 3,
+        "schedule_r5": 2,
+        "schedule_r6": 3,
+        "schedule_r7": 2,
+        "schedule_r8": 3,
+        "schedule_r9": 3,
+        "schedule_r10": 3,
+        "schedule_overall": 5
+      },
+      "dimension_avgs": {
+        "时间安排合理性": 3.0,
+        "任务依赖完整性": 3.0,
+        "资源分配均衡度": 2.7,
+        "约束条件满足度": 3.1,
+        "可执行性与粒度": 2.9
+      },
+      "strengths": [
+        "多依赖任务链排期",
+        "综合排期能力（10场景均值）"
+      ],
+      "risks": [
+        "简单线性排期（4人×3任务）",
+        "多人多技能约束排期",
+        "动态优先级调整排期"
+      ],
+      "recommendation": [
+        "排期规划"
+      ]
     }
   ],
   "leaderboards": {
-    "team_task_001": {
+    "schedule_r1": {
       "task": {
-        "id": "team_task_001",
-        "title": "团队任务分配与排期",
+        "id": "schedule_r1",
+        "title": "简单线性排期（4人×3任务）",
         "type": "text",
-        "prompt": "你是一个团队协作助手。4人团队需要在2周内完成一个产品原型，成员情况：\n- 张三：后端开发(Python)，周一/四下午有空\n- 李四：前端+UI设计(React/Figma)，周二/五全天\n- 王五：数据分析(Pandas/SQL)，工作日白天(周三上午有课)\n- 组长：项目管理+文档，晚上和周末\n请输出：A.每人具体任务+工时+截止日 B.2周时间线 C.3次同步会议时间 D.2个协作风险及应对。",
-        "checks": [
-          "任务分配",
-          "时间线",
-          "会议安排",
-          "风险识别",
-          "工时估算"
-        ]
+        "round": "R1",
+        "prompt": "ScheduleBench排期任务-R1",
+        "rubric": "基于5维评分：时间安排、任务依赖、资源分配、约束满足、可执行性"
       },
       "ranking": [
         {
-          "model": "Qwen3-VL-32B",
-          "score": 5,
-          "latency": 62.97,
-          "sample": "以下是为4人团队在2周内完成产品原型的详细协作计划： --- ## **A. 每人具体任务 + 工时 + 截止日** ### **张三（后端开发）** - **任务**：搭建API接口（用户认证、数据接口）、数据库设计、基础服务逻辑 - **工时**：12小时（周一、周四下午，每次3小时） - **截止日**：第1周周五（第7天）完成API框架；第2周周三（第13天）完成核心接口联调 ### **李四（前端+UI设计）** - **任务**：设计高保真原型（Figma）、实现前端页面（React），与后端联调 -...",
-          "capability": "vision",
-          "score_detail": {
-            "成员覆盖": {
-              "score": 5,
-              "desc": "是否覆盖了全部4个成员",
-              "weight": 0.25
-            },
-            "任务具体性": {
-              "score": 5,
-              "desc": "任务描述是否具体（含工时、交付物、截止日）",
-              "weight": 0.3
-            },
-            "时间线合理性": {
-              "score": 5,
-              "desc": "2周时间线是否可行，里程碑是否合理",
-              "weight": 0.2
-            },
-            "风险管理": {
-              "score": 3,
-              "desc": "是否识别了风险并给出应对方案",
-              "weight": 0.15
-            },
-            "结构可读性": {
-              "score": 5,
-              "desc": "输出格式是否清晰（表格/列表/分段）",
-              "weight": 0.1
-            }
-          }
-        },
-        {
-          "model": "Qwen3-VL-8B",
+          "model": "豆包 Seed 36B",
           "score": 4,
-          "latency": 13.46,
-          "sample": "以下是为4人团队在2周内完成产品原型的详细协作计划： — ✅ **A. 每人具体任务 + 工时 + 截止日** > *总周期：14天（2周），从Day 1（周一）开始计时* --- **张三（后端开发，Python）** - 任务： ① 设计API接口规范（含用户/数据/权限模块） ② 开发后端服务（RESTful API + 数据库交互） ③ 提供Mock数据接口供前端调用 - 工时：5人日（约10小时） - 截止日：Day 8（周一） - 说明：利用周一/四下午空档，Day 1–4完成接口设计，Day 5–8...",
-          "capability": "vision",
-          "score_detail": {
-            "成员覆盖": {
-              "score": 5,
-              "desc": "是否覆盖了全部4个成员",
-              "weight": 0.25
-            },
-            "任务具体性": {
-              "score": 5,
-              "desc": "任务描述是否具体（含工时、交付物、截止日）",
-              "weight": 0.3
-            },
-            "时间线合理性": {
-              "score": 3,
-              "desc": "2周时间线是否可行，里程碑是否合理",
-              "weight": 0.2
-            },
-            "风险管理": {
-              "score": 3,
-              "desc": "是否识别了风险并给出应对方案",
-              "weight": 0.15
-            },
-            "结构可读性": {
-              "score": 5,
-              "desc": "输出格式是否清晰（表格/列表/分段）",
-              "weight": 0.1
-            }
-          }
-        },
-        {
-          "model": "DeepSeek-V3.2",
-          "score": 4,
-          "latency": 71.13,
-          "sample": "# 团队协作计划：产品原型开发（两周周期） ## A. 每人具体任务+工时+截止日 ### 张三（后端开发） 1. **API框架搭建**（6小时）- 第1周周三前完成 - 设计RESTful API结构 - 设置数据库连接 2. **核心功能API开发**（12小时）- 第1周周五前完成 - 用户认证模块 - 数据接口端points 3. **数据交互接口**（8小时）- 第2周周二前完成 - 与前端的对接接口 - 数据格式标准化 ### 李四（前端+UI设计） 1. **UI设计定稿**（8小时）- 第1周周...",
+          "latency": 275.8,
+          "sample": "[ScheduleBench] 豆包 Seed 36B 在 简单线性排期（4人×3任务） 的评测结果\n时间安排合理性: 14/20 (归一化 3.5/5)\n任务依赖完整性: 16/20 (归一化 4.0/5)\n资源分配均衡度: 13/20 (归一化 3.2/5)\n约束条件满足度: 16/20 (归一化 4.0/5)\n可执行性与粒度: 13/20 (归一化 3.2/5)\nAI总分: 72/100 (",
           "capability": "text",
           "score_detail": {
-            "成员覆盖": {
-              "score": 5,
-              "desc": "是否覆盖了全部4个成员",
-              "weight": 0.25
-            },
-            "任务具体性": {
-              "score": 5,
-              "desc": "任务描述是否具体（含工时、交付物、截止日）",
-              "weight": 0.3
-            },
-            "时间线合理性": {
-              "score": 3,
-              "desc": "2周时间线是否可行，里程碑是否合理",
+            "时间安排合理性": {
+              "score": 3.5,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
               "weight": 0.2
             },
-            "风险管理": {
-              "score": 3,
-              "desc": "是否识别了风险并给出应对方案",
-              "weight": 0.15
+            "任务依赖完整性": {
+              "score": 4.0,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
             },
-            "结构可读性": {
-              "score": 3,
-              "desc": "输出格式是否清晰（表格/列表/分段）",
-              "weight": 0.1
+            "资源分配均衡度": {
+              "score": 3.2,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 4.0,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 3.2,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
             }
           }
         },
         {
-          "model": "DeepSeek-V4-Flash",
-          "score": 4,
-          "latency": 96.88,
-          "sample": "这是一个基于你提供的团队情况定制的**2周产品原型协作计划**。假设项目启动日为**下周一**，团队需在**第二周周日**前交付可演示的原型。 --- ### A. 每人具体任务 + 工时 + 截止日 #### 🧑‍💻 张三（后端 Python） | 任务 | 工时 | 截止日 | |------|------|--------| | 搭建基础API框架（用户认证、数据接口） | 6h | 第一周周四 | | 与李四对接前端API联调 | 4h | 第二周周一 | | 实现核心业务逻辑（如数据查询、计算） | 6...",
+          "model": "通义千问2.5 14B",
+          "score": 3,
+          "latency": 44.9,
+          "sample": "[ScheduleBench] 通义千问2.5 14B 在 简单线性排期（4人×3任务） 的评测结果\n时间安排合理性: 14/20 (归一化 3.5/5)\n任务依赖完整性: 15/20 (归一化 3.8/5)\n资源分配均衡度: 13/20 (归一化 3.2/5)\n约束条件满足度: 14/20 (归一化 3.5/5)\n可执行性与粒度: 12/20 (归一化 3.0/5)\nAI总分: 68/100 (",
           "capability": "text",
           "score_detail": {
-            "成员覆盖": {
-              "score": 5,
-              "desc": "是否覆盖了全部4个成员",
-              "weight": 0.25
-            },
-            "任务具体性": {
-              "score": 3,
-              "desc": "任务描述是否具体（含工时、交付物、截止日）",
-              "weight": 0.3
-            },
-            "时间线合理性": {
-              "score": 3,
-              "desc": "2周时间线是否可行，里程碑是否合理",
+            "时间安排合理性": {
+              "score": 3.5,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
               "weight": 0.2
             },
-            "风险管理": {
-              "score": 3,
-              "desc": "是否识别了风险并给出应对方案",
-              "weight": 0.15
+            "任务依赖完整性": {
+              "score": 3.8,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
             },
-            "结构可读性": {
-              "score": 5,
-              "desc": "输出格式是否清晰（表格/列表/分段）",
-              "weight": 0.1
+            "资源分配均衡度": {
+              "score": 3.2,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 3.5,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 3.0,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
             }
           }
         },
         {
-          "model": "Qwen3.6-27B",
+          "model": "DeepSeek-V3",
+          "score": 3,
+          "latency": 116.8,
+          "sample": "[ScheduleBench] DeepSeek-V3 在 简单线性排期（4人×3任务） 的评测结果\n时间安排合理性: 12/20 (归一化 3.0/5)\n任务依赖完整性: 11/20 (归一化 2.8/5)\n资源分配均衡度: 13/20 (归一化 3.2/5)\n约束条件满足度: 15/20 (归一化 3.8/5)\n可执行性与粒度: 11/20 (归一化 2.8/5)\nAI总分: 62/100 (",
+          "capability": "text",
+          "score_detail": {
+            "时间安排合理性": {
+              "score": 3.0,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
+              "weight": 0.2
+            },
+            "任务依赖完整性": {
+              "score": 2.8,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
+            },
+            "资源分配均衡度": {
+              "score": 3.2,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 3.8,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 2.8,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
+            }
+          }
+        },
+        {
+          "model": "智谱 GLM-4 9B",
           "score": 2,
-          "latency": 32.36,
-          "sample": "Here's a thinking process: 1. **Analyze User Input:** - **Role:** Team Collaboration Assistant - **Goal:** Complete a product prototype in 2 weeks - **Team Members & Availability/Skills:** - 张三 (Zhang San): Backend (Python), Available: Mon/Thu afternoons - 李四...",
+          "latency": 56.8,
+          "sample": "[ScheduleBench] 智谱 GLM-4 9B 在 简单线性排期（4人×3任务） 的评测结果\n时间安排合理性: 11/20 (归一化 2.8/5)\n任务依赖完整性: 10/20 (归一化 2.5/5)\n资源分配均衡度: 8/20 (归一化 2.0/5)\n约束条件满足度: 9/20 (归一化 2.2/5)\n可执行性与粒度: 8/20 (归一化 2.0/5)\nAI总分: 46/100 (归一化",
           "capability": "text",
           "score_detail": {
-            "成员覆盖": {
-              "score": 5,
-              "desc": "是否覆盖了全部4个成员",
-              "weight": 0.25
-            },
-            "任务具体性": {
-              "score": 1,
-              "desc": "任务描述是否具体（含工时、交付物、截止日）",
-              "weight": 0.3
-            },
-            "时间线合理性": {
-              "score": 1,
-              "desc": "2周时间线是否可行，里程碑是否合理",
+            "时间安排合理性": {
+              "score": 2.8,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
               "weight": 0.2
             },
-            "风险管理": {
-              "score": 1,
-              "desc": "是否识别了风险并给出应对方案",
-              "weight": 0.15
-            },
-            "结构可读性": {
-              "score": 3,
-              "desc": "输出格式是否清晰（表格/列表/分段）",
-              "weight": 0.1
-            }
-          }
-        }
-      ]
-    },
-    "meeting_coord_001": {
-      "task": {
-        "id": "meeting_coord_001",
-        "title": "多人会议时间协调",
-        "type": "text",
-        "prompt": "你是一个日程协调助手。5人团队需下周安排会议，成员可用时间：\n-Alice: 周一2-5pm,周三10am-12pm,周四3-6pm,周五全天\n-Bob: 周二/四下午2-5pm,周三晚7-9pm,周六上午\n-Carol: 周一/三/五上午9-12am,周二下午\n-Dave: 周四/五下午,周日下午,每晚9-11pm\n-Eve: 周一全天,周二上午,周三下午2-5pm,周六下午\n约束：至少1次全员会(>=1h)，前端组(Alice+Bob)需2次结对会(>=45min)，文档组(Carol+Dave)需1次评审(>=30min)，避免晚9点后和周末。请输出最优方案。",
-        "checks": [
-          "全员会议",
-          "分组会议",
-          "时间具体",
-          "冲突处理",
-          "替代方案"
-        ]
-      },
-      "ranking": [
-        {
-          "model": "DeepSeek-V4-Flash",
-          "score": 5,
-          "latency": 85.21,
-          "sample": "好的，我们一步步分析并安排这个会议方案。我会先整理每个人的可用时间（排除晚9点后和周末），然后找出全员会的时间窗口，再安排前端组和文档组的会议。 --- ## 一、时间整理（排除晚9点后 & 周末） ### Alice - 周一 2–5pm - 周三 10am–12pm - 周四 3–6pm - 周五 全天（假设9am–6pm） ### Bob - 周二 2–5pm - 周四 2–5pm - 周三 7–9pm（但9pm截止，所以实际可用 7–9pm，但晚9点后排除，所以可用到9pm整，但为了安全我们取7–8:45...",
-          "capability": "text",
-          "score_detail": {
-            "成员覆盖": {
-              "score": 5,
-              "desc": "是否覆盖全部5个成员的时间",
+            "任务依赖完整性": {
+              "score": 2.5,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
               "weight": 0.2
             },
-            "会议方案完整": {
-              "score": 5,
-              "desc": "是否满足了全员会+分组会+评审会需求",
-              "weight": 0.35
+            "资源分配均衡度": {
+              "score": 2.0,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
             },
-            "约束满足": {
-              "score": 5,
-              "desc": "是否遵守了约束（避免晚9点+周末）",
-              "weight": 0.25
+            "约束条件满足度": {
+              "score": 2.2,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
             },
-            "冲突处理": {
-              "score": 1,
-              "desc": "是否识别了时间冲突并给出替代方案",
-              "weight": 0.1
-            },
-            "表格化输出": {
-              "score": 5,
-              "desc": "是否用表格展示会议负荷",
-              "weight": 0.1
+            "可执行性与粒度": {
+              "score": 2.0,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
             }
           }
         },
         {
-          "model": "Qwen3-VL-8B",
-          "score": 3,
-          "latency": 24.77,
-          "sample": "根据团队成员可用时间、约束条件（全员会≥1小时、前端组2次结对会≥45分钟、文档组1次评审≥30分钟、避免晚9点后和周末），我们进行最优日程协调。 --- ✅ **约束回顾：** - **全员会**：5人必须同时出席，≥1小时。 - **前端组（Alice+Bob）**：需2次结对会，每次≥45分钟。 - **文档组（Carol+Dave）**：需1次评审，≥30分钟。 - **禁止**：晚9点后、周末（周六/周日）会议。 --- ✅ **可用时间段汇总（按成员）：** - **Alice**： - 周一 2-5...",
-          "capability": "vision",
-          "score_detail": {
-            "成员覆盖": {
-              "score": 5,
-              "desc": "是否覆盖全部5个成员的时间",
-              "weight": 0.2
-            },
-            "会议方案完整": {
-              "score": 1,
-              "desc": "是否满足了全员会+分组会+评审会需求",
-              "weight": 0.35
-            },
-            "约束满足": {
-              "score": 5,
-              "desc": "是否遵守了约束（避免晚9点+周末）",
-              "weight": 0.25
-            },
-            "冲突处理": {
-              "score": 5,
-              "desc": "是否识别了时间冲突并给出替代方案",
-              "weight": 0.1
-            },
-            "表格化输出": {
-              "score": 1,
-              "desc": "是否用表格展示会议负荷",
-              "weight": 0.1
-            }
-          }
-        },
-        {
-          "model": "DeepSeek-V3.2",
-          "score": 3,
-          "latency": 94.28,
-          "sample": "好的，我们先整理条件，再分步推理。 --- ## **1. 条件整理** ### **成员可用时间（已转换为统一格式，假设时间单位是小时）** - **Alice** Mon 14-17 Wed 10-12 Thu 15-18 Fri 全天 （假设 Fri 9-17 算全天） - **Bob** Tue 14-17 Thu 14-17 Wed 19-21 Sat 上午（假设 9-12） - **Carol** Mon 9-12 Wed 9-12 Fri 9-12 Tue 下午（假设 13-17） - **Dave...",
-          "capability": "text",
-          "score_detail": {
-            "成员覆盖": {
-              "score": 5,
-              "desc": "是否覆盖全部5个成员的时间",
-              "weight": 0.2
-            },
-            "会议方案完整": {
-              "score": 1,
-              "desc": "是否满足了全员会+分组会+评审会需求",
-              "weight": 0.35
-            },
-            "约束满足": {
-              "score": 5,
-              "desc": "是否遵守了约束（避免晚9点+周末）",
-              "weight": 0.25
-            },
-            "冲突处理": {
-              "score": 1,
-              "desc": "是否识别了时间冲突并给出替代方案",
-              "weight": 0.1
-            },
-            "表格化输出": {
-              "score": 1,
-              "desc": "是否用表格展示会议负荷",
-              "weight": 0.1
-            }
-          }
-        },
-        {
-          "model": "Qwen3.6-27B",
+          "model": "通义千问2.5 32B",
           "score": 2,
-          "latency": 37.17,
-          "sample": "Here's a thinking process that leads to the suggested schedule: 1. **Understand the Goal:** The objective is to schedule meetings for a 5-person team (Alice, Bob, Carol, Dave, Eve) for the upcoming week based on their availability and specific constraints. 2....",
+          "latency": 79.6,
+          "sample": "[ScheduleBench] 通义千问2.5 32B 在 简单线性排期（4人×3任务） 的评测结果\n时间安排合理性: 10/20 (归一化 2.5/5)\n任务依赖完整性: 11/20 (归一化 2.8/5)\n资源分配均衡度: 9/20 (归一化 2.2/5)\n约束条件满足度: 7/20 (归一化 1.8/5)\n可执行性与粒度: 9/20 (归一化 2.2/5)\nAI总分: 46/100 (归一化",
           "capability": "text",
           "score_detail": {
-            "成员覆盖": {
-              "score": 5,
-              "desc": "是否覆盖全部5个成员的时间",
+            "时间安排合理性": {
+              "score": 2.5,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
               "weight": 0.2
             },
-            "会议方案完整": {
-              "score": 1,
-              "desc": "是否满足了全员会+分组会+评审会需求",
-              "weight": 0.35
+            "任务依赖完整性": {
+              "score": 2.8,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
             },
-            "约束满足": {
-              "score": 1,
-              "desc": "是否遵守了约束（避免晚9点+周末）",
-              "weight": 0.25
+            "资源分配均衡度": {
+              "score": 2.2,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
             },
-            "冲突处理": {
-              "score": 1,
-              "desc": "是否识别了时间冲突并给出替代方案",
-              "weight": 0.1
+            "约束条件满足度": {
+              "score": 1.8,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
             },
-            "表格化输出": {
-              "score": 1,
-              "desc": "是否用表格展示会议负荷",
-              "weight": 0.1
-            }
-          }
-        },
-        {
-          "model": "Qwen3-VL-32B",
-          "score": 1,
-          "latency": 120.0,
-          "sample": "超时(120s)",
-          "capability": "vision",
-          "score_detail": {
-            "超时": {
-              "score": 1,
-              "desc": "API请求超时(>120s)",
-              "weight": 1.0
+            "可执行性与粒度": {
+              "score": 2.2,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
             }
           }
         }
       ]
     },
-    "project_risk_001": {
+    "schedule_r2": {
       "task": {
-        "id": "project_risk_001",
-        "title": "项目风险识别与应对",
+        "id": "schedule_r2",
+        "title": "多依赖任务链排期",
         "type": "text",
-        "prompt": "你是一个项目管理顾问。一个5人团队正在开发一个移动App，项目周期8周，已进行到第3周。当前状况：\n- 后端进度延迟1周(核心API未完成)\n- 前端设计师下周请产假(需交接)\n- 预算已使用55%\n- 需求文档有3处模糊待澄清\n- 测试环境不稳定，频繁宕机\n请：A.识别至少5个风险(按严重度排序) B.每个风险的应对措施 C.给项目经理的3条优先行动建议。",
-        "checks": [
-          "风险识别",
-          "严重度排序",
-          "应对措施",
-          "行动建议",
-          "量化分析"
-        ]
+        "round": "R2",
+        "prompt": "ScheduleBench排期任务-R2",
+        "rubric": "基于5维评分：时间安排、任务依赖、资源分配、约束满足、可执行性"
       },
       "ranking": [
         {
-          "model": "Qwen3-VL-8B",
-          "score": 3,
-          "latency": 12.08,
-          "sample": "作为项目管理顾问，我将针对当前项目状况进行风险识别、应对措施设计，并给出项目经理的优先行动建议，确保项目在剩余5周内仍能按目标交付。 — 📌 A. 识别至少5个风险（按严重度排序） 1. 🚨 高风险：核心API延迟交付 → 导致前端无法联调 → 全项目进度严重滞后 2. 🚨 高风险：前端设计师下周请假 → 设计交接不及时 → 产品视觉/交互延期 → 影响用户验收与上线节奏 3. 🚨 中高风险：测试环境频繁宕机 → 阻碍回归测试与质量保障 → 增加缺陷漏出风险 4. ⚠️ 中风险：需求文档模糊 → 导致开发与设计反...",
-          "capability": "vision",
-          "score_detail": {
-            "风险数量": {
-              "score": 1,
-              "desc": "是否识别了足够数量和类型的风险",
-              "weight": 0.3
-            },
-            "严重度排序": {
-              "score": 3,
-              "desc": "是否按严重程度/优先级排序",
-              "weight": 0.2
-            },
-            "应对措施": {
-              "score": 3,
-              "desc": "每个风险是否有可操作的应对措施",
-              "weight": 0.3
-            },
-            "行动建议": {
-              "score": 5,
-              "desc": "是否给出了优先行动建议",
-              "weight": 0.1
-            },
-            "量化分析": {
-              "score": 5,
-              "desc": "是否包含概率/影响等量化信息",
-              "weight": 0.1
-            }
-          }
-        },
-        {
-          "model": "DeepSeek-V4-Flash",
-          "score": 3,
-          "latency": 21.14,
-          "sample": "### A. 风险识别（按严重度排序） 1. **后端进度延迟（核心API未完成）** - **严重度：极高** - 原因：后端延迟1周，且核心API是前端依赖的基础，可能引发连锁延期，导致项目无法按时交付。 2. **预算超支（已使用55%）** - **严重度：高** - 原因：时间进度仅37.5%（3/8周），预算消耗已过半，后续5周可能面临资金不足，影响资源投入或被迫缩减范围。 3. **前端设计师产假（下周请假）** - **严重度：高** - 原因：关键人员离开，若交接不充分，UI/UX设计工作停滞，...",
+          "model": "通义千问2.5 32B",
+          "score": 4,
+          "latency": 55.2,
+          "sample": "[ScheduleBench] 通义千问2.5 32B 在 多依赖任务链排期 的评测结果\n时间安排合理性: 14/20 (归一化 3.5/5)\n任务依赖完整性: 13/20 (归一化 3.2/5)\n资源分配均衡度: 13/20 (归一化 3.2/5)\n约束条件满足度: 18/20 (归一化 4.5/5)\n可执行性与粒度: 12/20 (归一化 3.0/5)\nAI总分: 70/100 (归一化 3.",
           "capability": "text",
           "score_detail": {
-            "风险数量": {
-              "score": 1,
-              "desc": "是否识别了足够数量和类型的风险",
-              "weight": 0.3
-            },
-            "严重度排序": {
-              "score": 3,
-              "desc": "是否按严重程度/优先级排序",
+            "时间安排合理性": {
+              "score": 3.5,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
               "weight": 0.2
             },
-            "应对措施": {
-              "score": 5,
-              "desc": "每个风险是否有可操作的应对措施",
-              "weight": 0.3
+            "任务依赖完整性": {
+              "score": 3.2,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
             },
-            "行动建议": {
-              "score": 5,
-              "desc": "是否给出了优先行动建议",
-              "weight": 0.1
+            "资源分配均衡度": {
+              "score": 3.2,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
             },
-            "量化分析": {
-              "score": 3,
-              "desc": "是否包含概率/影响等量化信息",
-              "weight": 0.1
+            "约束条件满足度": {
+              "score": 4.5,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 3.0,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
             }
           }
         },
         {
-          "model": "Qwen3-VL-32B",
-          "score": 3,
-          "latency": 51.15,
-          "sample": "作为项目管理顾问，针对当前项目状况，我将从风险识别、应对措施和优先行动建议三方面进行系统分析。 --- ## **A. 识别至少5个风险（按严重度排序）** 1. **后端核心API延迟1周（高风险）** → 直接影响前端开发、集成测试和整体交付进度，可能导致项目延期。 2. **前端设计师下周请产假且需交接（高风险）** → 设计工作可能中断，设计一致性、进度延误，若交接不充分，可能引发返工或风格不统一。 3. **测试环境不稳定，频繁宕机（高风险）** → 阻碍测试团队开展回归测试和性能测试，影响质量保障，可...",
-          "capability": "vision",
-          "score_detail": {
-            "风险数量": {
-              "score": 1,
-              "desc": "是否识别了足够数量和类型的风险",
-              "weight": 0.3
-            },
-            "严重度排序": {
-              "score": 3,
-              "desc": "是否按严重程度/优先级排序",
-              "weight": 0.2
-            },
-            "应对措施": {
-              "score": 3,
-              "desc": "每个风险是否有可操作的应对措施",
-              "weight": 0.3
-            },
-            "行动建议": {
-              "score": 5,
-              "desc": "是否给出了优先行动建议",
-              "weight": 0.1
-            },
-            "量化分析": {
-              "score": 3,
-              "desc": "是否包含概率/影响等量化信息",
-              "weight": 0.1
-            }
-          }
-        },
-        {
-          "model": "DeepSeek-V3.2",
-          "score": 3,
-          "latency": 65.52,
-          "sample": "# 项目管理风险评估与应对方案 ## A. 识别风险（按严重度排序） ### 1. **关键路径延迟风险**（严重度：极高） - 后端延迟1周直接影响核心API开发，而API是前端开发、集成测试的依赖项 - 可能造成连锁延误，威胁项目按期交付 ### 2. **关键人员流失风险**（严重度：高） - 前端设计师下周请产假，设计资源缺口直接影响UI/UX交付 - 设计未完成将阻塞前端开发，且交接不足可能导致质量下降 ### 3. **预算超支风险**（严重度：高） - 第3周已使用55%预算，按此趋势第6周将耗尽资...",
+          "model": "DeepSeek-V3",
+          "score": 4,
+          "latency": 104.8,
+          "sample": "[ScheduleBench] DeepSeek-V3 在 多依赖任务链排期 的评测结果\n时间安排合理性: 14/20 (归一化 3.5/5)\n任务依赖完整性: 12/20 (归一化 3.0/5)\n资源分配均衡度: 15/20 (归一化 3.8/5)\n约束条件满足度: 17/20 (归一化 4.2/5)\n可执行性与粒度: 13/20 (归一化 3.2/5)\nAI总分: 71/100 (归一化 3.",
           "capability": "text",
           "score_detail": {
-            "风险数量": {
-              "score": 1,
-              "desc": "是否识别了足够数量和类型的风险",
-              "weight": 0.3
-            },
-            "严重度排序": {
-              "score": 3,
-              "desc": "是否按严重程度/优先级排序",
+            "时间安排合理性": {
+              "score": 3.5,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
               "weight": 0.2
             },
-            "应对措施": {
-              "score": 5,
-              "desc": "每个风险是否有可操作的应对措施",
-              "weight": 0.3
+            "任务依赖完整性": {
+              "score": 3.0,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
             },
-            "行动建议": {
-              "score": 5,
-              "desc": "是否给出了优先行动建议",
-              "weight": 0.1
+            "资源分配均衡度": {
+              "score": 3.8,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
             },
-            "量化分析": {
-              "score": 3,
-              "desc": "是否包含概率/影响等量化信息",
-              "weight": 0.1
+            "约束条件满足度": {
+              "score": 4.2,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 3.2,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
             }
           }
         },
         {
-          "model": "Qwen3.6-27B",
+          "model": "豆包 Seed 36B",
+          "score": 4,
+          "latency": 190.1,
+          "sample": "[ScheduleBench] 豆包 Seed 36B 在 多依赖任务链排期 的评测结果\n时间安排合理性: 14/20 (归一化 3.5/5)\n任务依赖完整性: 14/20 (归一化 3.5/5)\n资源分配均衡度: 12/20 (归一化 3.0/5)\n约束条件满足度: 18/20 (归一化 4.5/5)\n可执行性与粒度: 12/20 (归一化 3.0/5)\nAI总分: 70/100 (归一化 3.",
+          "capability": "text",
+          "score_detail": {
+            "时间安排合理性": {
+              "score": 3.5,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
+              "weight": 0.2
+            },
+            "任务依赖完整性": {
+              "score": 3.5,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
+            },
+            "资源分配均衡度": {
+              "score": 3.0,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 4.5,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 3.0,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
+            }
+          }
+        },
+        {
+          "model": "通义千问2.5 14B",
+          "score": 3,
+          "latency": 51.3,
+          "sample": "[ScheduleBench] 通义千问2.5 14B 在 多依赖任务链排期 的评测结果\n时间安排合理性: 13/20 (归一化 3.2/5)\n任务依赖完整性: 12/20 (归一化 3.0/5)\n资源分配均衡度: 13/20 (归一化 3.2/5)\n约束条件满足度: 11/20 (归一化 2.8/5)\n可执行性与粒度: 10/20 (归一化 2.5/5)\nAI总分: 59/100 (归一化 2.",
+          "capability": "text",
+          "score_detail": {
+            "时间安排合理性": {
+              "score": 3.2,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
+              "weight": 0.2
+            },
+            "任务依赖完整性": {
+              "score": 3.0,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
+            },
+            "资源分配均衡度": {
+              "score": 3.2,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 2.8,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 2.5,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
+            }
+          }
+        },
+        {
+          "model": "智谱 GLM-4 9B",
           "score": 2,
-          "latency": 31.48,
-          "sample": "Here's a thinking process: 1. **Analyze User Input:** - **Role:** Project Management Consultant - **Team:** 5 people developing a mobile App - **Timeline:** 8 weeks total, currently in Week 3 (5 weeks remaining) - **Current Status/Issues:** - Backend delayed ...",
+          "latency": 50.4,
+          "sample": "[ScheduleBench] 智谱 GLM-4 9B 在 多依赖任务链排期 的评测结果\n时间安排合理性: 9/20 (归一化 2.2/5)\n任务依赖完整性: 11/20 (归一化 2.8/5)\n资源分配均衡度: 9/20 (归一化 2.2/5)\n约束条件满足度: 10/20 (归一化 2.5/5)\n可执行性与粒度: 8/20 (归一化 2.0/5)\nAI总分: 47/100 (归一化 2.3/5",
           "capability": "text",
           "score_detail": {
-            "风险数量": {
-              "score": 1,
-              "desc": "是否识别了足够数量和类型的风险",
-              "weight": 0.3
-            },
-            "严重度排序": {
-              "score": 5,
-              "desc": "是否按严重程度/优先级排序",
+            "时间安排合理性": {
+              "score": 2.2,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
               "weight": 0.2
             },
-            "应对措施": {
-              "score": 1,
-              "desc": "每个风险是否有可操作的应对措施",
-              "weight": 0.3
+            "任务依赖完整性": {
+              "score": 2.8,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
             },
-            "行动建议": {
-              "score": 1,
-              "desc": "是否给出了优先行动建议",
-              "weight": 0.1
+            "资源分配均衡度": {
+              "score": 2.2,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
             },
-            "量化分析": {
-              "score": 3,
-              "desc": "是否包含概率/影响等量化信息",
-              "weight": 0.1
+            "约束条件满足度": {
+              "score": 2.5,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 2.0,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
             }
           }
         }
       ]
     },
-    "code_review_001": {
+    "schedule_r3": {
       "task": {
-        "id": "code_review_001",
-        "title": "代码安全与质量审查",
+        "id": "schedule_r3",
+        "title": "资源冲突场景排期",
         "type": "text",
-        "prompt": "审查以下Python代码的安全和质量问题：\n```python\nfrom flask import Flask, request, jsonify\nimport sqlite3\napp = Flask(__name__)\n@app.route('/api/search')\ndef search():\n    q = request.args.get('q','')\n    conn = sqlite3.connect('db.sqlite3')\n    cur = conn.cursor()\n    cur.execute(f\"SELECT * FROM items WHERE name LIKE '%{q}%'\")\n    rows = cur.fetchall()\n    return jsonify([{'id':r[0],'name':r[1],'owner':r[2]} for r in rows])\nif __name__=='__main__':\n    app.run(debug=True)\n```\n请指出：A.安全问题(至少3个) B.代码质量问题(至少2个) C.逐条修复方案。",
-        "checks": [
-          "SQL注入",
-          "敏感信息",
-          "debug模式",
-          "资源泄漏",
-          "修复代码"
-        ]
+        "round": "R3",
+        "prompt": "ScheduleBench排期任务-R3",
+        "rubric": "基于5维评分：时间安排、任务依赖、资源分配、约束满足、可执行性"
       },
       "ranking": [
         {
-          "model": "Qwen3-VL-8B",
-          "score": 4,
-          "latency": 15.66,
-          "sample": "该Python Flask代码存在多个安全和质量问题，以下是详细审查和修复方案： --- ## A. 安全问题（至少3个） ### 1. SQL注入漏洞（严重） - **问题描述**：使用 `f-string` 拼接用户输入 `q` 直接构造SQL语句，攻击者可通过构造恶意输入（如 `' OR 1=1 --`）绕过过滤，获取所有数据或执行任意SQL。 - **风险等级**：高 —— 可导致数据泄露、数据库破坏。 ### 2. 未验证或清理输入（输入污染） - **问题描述**：`q = request.args....",
-          "capability": "vision",
-          "score_detail": {
-            "SQL注入识别": {
-              "score": 5,
-              "desc": "是否准确识别SQL注入漏洞并给出修复",
-              "weight": 0.3
-            },
-            "其他安全": {
-              "score": 5,
-              "desc": "是否识别debug模式/敏感信息/资源泄漏等",
-              "weight": 0.25
-            },
-            "修复方案质量": {
-              "score": 1,
-              "desc": "修复方案是否可执行（含代码）",
-              "weight": 0.2
-            },
-            "代码质量维度": {
-              "score": 5,
-              "desc": "是否覆盖了资源管理/异常处理等",
-              "weight": 0.15
-            },
-            "结构化审查报告": {
-              "score": 3,
-              "desc": "输出是否结构化（分类/表格/编号）",
-              "weight": 0.1
-            }
-          }
-        },
-        {
-          "model": "DeepSeek-V4-Flash",
-          "score": 4,
-          "latency": 34.58,
-          "sample": "### A. 安全问题（至少3个） 1. **SQL注入漏洞** 代码直接拼接用户输入 `q` 到 SQL 查询中，攻击者可通过构造恶意参数（如 `' OR 1=1 --`）窃取、篡改或删除数据库数据。 2. **调试模式未关闭（debug=True）** `app.run(debug=True)` 在生产环境中会暴露详细的错误堆栈信息、交互式调试器，导致敏感信息泄露，甚至可能被远程执行代码。 3. **数据库连接未释放** 每次请求创建 `sqlite3.connect` 但从未调用 `conn.close()...",
+          "model": "通义千问2.5 32B",
+          "score": 3,
+          "latency": 65.8,
+          "sample": "[ScheduleBench] 通义千问2.5 32B 在 资源冲突场景排期 的评测结果\n时间安排合理性: 13/20 (归一化 3.2/5)\n任务依赖完整性: 12/20 (归一化 3.0/5)\n资源分配均衡度: 11/20 (归一化 2.8/5)\n约束条件满足度: 12/20 (归一化 3.0/5)\n可执行性与粒度: 10/20 (归一化 2.5/5)\nAI总分: 58/100 (归一化 2.",
           "capability": "text",
           "score_detail": {
-            "SQL注入识别": {
-              "score": 5,
-              "desc": "是否准确识别SQL注入漏洞并给出修复",
-              "weight": 0.3
-            },
-            "其他安全": {
-              "score": 5,
-              "desc": "是否识别debug模式/敏感信息/资源泄漏等",
-              "weight": 0.25
-            },
-            "修复方案质量": {
-              "score": 1,
-              "desc": "修复方案是否可执行（含代码）",
+            "时间安排合理性": {
+              "score": 3.2,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
               "weight": 0.2
             },
-            "代码质量维度": {
-              "score": 5,
-              "desc": "是否覆盖了资源管理/异常处理等",
-              "weight": 0.15
+            "任务依赖完整性": {
+              "score": 3.0,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
             },
-            "结构化审查报告": {
-              "score": 3,
-              "desc": "输出是否结构化（分类/表格/编号）",
-              "weight": 0.1
+            "资源分配均衡度": {
+              "score": 2.8,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 3.0,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 2.5,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
             }
           }
         },
         {
-          "model": "Qwen3.6-27B",
-          "score": 4,
-          "latency": 36.01,
-          "sample": "Here's a thinking process: 1. **Analyze User Input:** - **Input Code:** A simple Flask application with a SQLite database query endpoint `/api/search`. - **Task:** Review the code for security and quality issues. - **Requirements:** - A. Security issues (at l...",
+          "model": "DeepSeek-V3",
+          "score": 3,
+          "latency": 136.0,
+          "sample": "[ScheduleBench] DeepSeek-V3 在 资源冲突场景排期 的评测结果\n时间安排合理性: 13/20 (归一化 3.2/5)\n任务依赖完整性: 12/20 (归一化 3.0/5)\n资源分配均衡度: 12/20 (归一化 3.0/5)\n约束条件满足度: 11/20 (归一化 2.8/5)\n可执行性与粒度: 11/20 (归一化 2.8/5)\nAI总分: 59/100 (归一化 2.",
           "capability": "text",
           "score_detail": {
-            "SQL注入识别": {
-              "score": 5,
-              "desc": "是否准确识别SQL注入漏洞并给出修复",
-              "weight": 0.3
-            },
-            "其他安全": {
-              "score": 5,
-              "desc": "是否识别debug模式/敏感信息/资源泄漏等",
-              "weight": 0.25
-            },
-            "修复方案质量": {
-              "score": 3,
-              "desc": "修复方案是否可执行（含代码）",
+            "时间安排合理性": {
+              "score": 3.2,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
               "weight": 0.2
             },
-            "代码质量维度": {
-              "score": 5,
-              "desc": "是否覆盖了资源管理/异常处理等",
-              "weight": 0.15
+            "任务依赖完整性": {
+              "score": 3.0,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
             },
-            "结构化审查报告": {
-              "score": 1,
-              "desc": "输出是否结构化（分类/表格/编号）",
-              "weight": 0.1
+            "资源分配均衡度": {
+              "score": 3.0,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 2.8,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 2.8,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
             }
           }
         },
         {
-          "model": "Qwen3-VL-32B",
-          "score": 4,
-          "latency": 67.96,
-          "sample": "以下是对该Python Flask代码的安全和质量问题的详细审查及修复方案： --- ## **A. 安全问题（至少3个）** ### 1. **SQL注入漏洞（严重）** - **问题描述**：直接将用户输入 `q` 通过字符串拼接插入到SQL查询中（`f\"SELECT * FROM items WHERE name LIKE '%{q}%'`），未使用参数化查询。 - **风险**：攻击者可通过构造特殊输入（如 `' OR 1=1--`）绕过查询限制，获取全部数据或执行恶意操作。 ### 2. **数据库文件...",
-          "capability": "vision",
-          "score_detail": {
-            "SQL注入识别": {
-              "score": 5,
-              "desc": "是否准确识别SQL注入漏洞并给出修复",
-              "weight": 0.3
-            },
-            "其他安全": {
-              "score": 5,
-              "desc": "是否识别debug模式/敏感信息/资源泄漏等",
-              "weight": 0.25
-            },
-            "修复方案质量": {
-              "score": 1,
-              "desc": "修复方案是否可执行（含代码）",
-              "weight": 0.2
-            },
-            "代码质量维度": {
-              "score": 5,
-              "desc": "是否覆盖了资源管理/异常处理等",
-              "weight": 0.15
-            },
-            "结构化审查报告": {
-              "score": 5,
-              "desc": "输出是否结构化（分类/表格/编号）",
-              "weight": 0.1
-            }
-          }
-        },
-        {
-          "model": "DeepSeek-V3.2",
-          "score": 4,
-          "latency": 73.75,
-          "sample": "## 审查结果 ### A. 安全问题（至少3个） 1. **SQL注入漏洞**：直接在SQL语句中拼接用户输入（`q`参数），攻击者可注入恶意SQL代码 2. **调试模式暴露**：生产环境运行`debug=True`会暴露敏感信息、启用调试器，存在安全风险 3. **缺乏输入验证和过滤**：用户输入未进行任何验证、转义或长度限制 4. **连接管理不当**：数据库连接未关闭，可能导致资源泄漏 5. **错误信息泄露**：未处理数据库异常，可能向用户暴露内部错误信息 ### B. 代码质量问题（至少2个） 1....",
+          "model": "豆包 Seed 36B",
+          "score": 3,
+          "latency": 308.1,
+          "sample": "[ScheduleBench] 豆包 Seed 36B 在 资源冲突场景排期 的评测结果\n时间安排合理性: 13/20 (归一化 3.2/5)\n任务依赖完整性: 12/20 (归一化 3.0/5)\n资源分配均衡度: 12/20 (归一化 3.0/5)\n约束条件满足度: 15/20 (归一化 3.8/5)\n可执行性与粒度: 11/20 (归一化 2.8/5)\nAI总分: 63/100 (归一化 3.",
           "capability": "text",
           "score_detail": {
-            "SQL注入识别": {
-              "score": 5,
-              "desc": "是否准确识别SQL注入漏洞并给出修复",
-              "weight": 0.3
-            },
-            "其他安全": {
-              "score": 5,
-              "desc": "是否识别debug模式/敏感信息/资源泄漏等",
-              "weight": 0.25
-            },
-            "修复方案质量": {
-              "score": 3,
-              "desc": "修复方案是否可执行（含代码）",
+            "时间安排合理性": {
+              "score": 3.2,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
               "weight": 0.2
             },
-            "代码质量维度": {
-              "score": 5,
-              "desc": "是否覆盖了资源管理/异常处理等",
-              "weight": 0.15
+            "任务依赖完整性": {
+              "score": 3.0,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
             },
-            "结构化审查报告": {
-              "score": 3,
-              "desc": "输出是否结构化（分类/表格/编号）",
-              "weight": 0.1
+            "资源分配均衡度": {
+              "score": 3.0,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 3.8,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 2.8,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
+            }
+          }
+        },
+        {
+          "model": "智谱 GLM-4 9B",
+          "score": 2,
+          "latency": 35.5,
+          "sample": "[ScheduleBench] 智谱 GLM-4 9B 在 资源冲突场景排期 的评测结果\n时间安排合理性: 11/20 (归一化 2.8/5)\n任务依赖完整性: 12/20 (归一化 3.0/5)\n资源分配均衡度: 10/20 (归一化 2.5/5)\n约束条件满足度: 9/20 (归一化 2.2/5)\n可执行性与粒度: 9/20 (归一化 2.2/5)\nAI总分: 51/100 (归一化 2.5/",
+          "capability": "text",
+          "score_detail": {
+            "时间安排合理性": {
+              "score": 2.8,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
+              "weight": 0.2
+            },
+            "任务依赖完整性": {
+              "score": 3.0,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
+            },
+            "资源分配均衡度": {
+              "score": 2.5,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 2.2,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 2.2,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
+            }
+          }
+        },
+        {
+          "model": "通义千问2.5 14B",
+          "score": 2,
+          "latency": 49.4,
+          "sample": "[ScheduleBench] 通义千问2.5 14B 在 资源冲突场景排期 的评测结果\n时间安排合理性: 13/20 (归一化 3.2/5)\n任务依赖完整性: 11/20 (归一化 2.8/5)\n资源分配均衡度: 10/20 (归一化 2.5/5)\n约束条件满足度: 7/20 (归一化 1.8/5)\n可执行性与粒度: 8/20 (归一化 2.0/5)\nAI总分: 49/100 (归一化 2.5/",
+          "capability": "text",
+          "score_detail": {
+            "时间安排合理性": {
+              "score": 3.2,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
+              "weight": 0.2
+            },
+            "任务依赖完整性": {
+              "score": 2.8,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
+            },
+            "资源分配均衡度": {
+              "score": 2.5,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 1.8,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 2.0,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
             }
           }
         }
       ]
     },
-    "schedule_vision_001": {
+    "schedule_r4": {
       "task": {
-        "id": "schedule_vision_001",
-        "title": "日程表图像识别提取",
-        "type": "vision",
-        "prompt": "请识别这张日程表/时间表图片中的所有条目，用JSON格式输出：{\"type\":\"周计划/课程表/会议表\",\"entries\":[{\"day\":\"...\",\"time\":\"...\",\"event\":\"...\",\"category\":\"课程/会议/任务\"},...],\"conflicts\":[...],\"summary\":\"...\"}",
-        "checks": [
-          "OCR准确",
-          "JSON格式",
-          "冲突检测",
-          "日程分类",
-          "数量完整"
-        ]
+        "id": "schedule_r4",
+        "title": "紧截止日期排期",
+        "type": "text",
+        "round": "R4",
+        "prompt": "ScheduleBench排期任务-R4",
+        "rubric": "基于5维评分：时间安排、任务依赖、资源分配、约束满足、可执行性"
       },
       "ranking": [
         {
-          "model": "Qwen3-VL-8B",
-          "score": 5,
-          "latency": 10.1,
-          "sample": "```json { \"type\": \"周计划/课程表/会议表\", \"entries\": [ { \"day\": \"周一\", \"time\": \"8:00-9:45\", \"event\": \"英语 C301\", \"category\": \"课程\" }, { \"day\": \"周一\", \"time\": \"14:00-15:45\", \"event\": \"微积分\", \"category\": \"课程\" }, { \"day\": \"周一\", \"time\": \"19:00-21:00\", \"event\": \"健身房\", \"category...",
-          "capability": "vision",
+          "model": "通义千问2.5 14B",
+          "score": 3,
+          "latency": 53.7,
+          "sample": "[ScheduleBench] 通义千问2.5 14B 在 紧截止日期排期 的评测结果\n时间安排合理性: 11/20 (归一化 2.8/5)\n任务依赖完整性: 12/20 (归一化 3.0/5)\n资源分配均衡度: 9/20 (归一化 2.2/5)\n约束条件满足度: 11/20 (归一化 2.8/5)\n可执行性与粒度: 12/20 (归一化 3.0/5)\nAI总分: 55/100 (归一化 2.8/",
+          "capability": "text",
           "score_detail": {
-            "OCR准确度": {
-              "score": 5,
-              "desc": "提取的时间+事件是否准确",
-              "weight": 0.3
-            },
-            "结构化输出": {
-              "score": 5,
-              "desc": "是否输出JSON/结构化格式",
-              "weight": 0.25
-            },
-            "日程分类": {
-              "score": 5,
-              "desc": "是否对条目做了分类（课程/会议/任务等）",
+            "时间安排合理性": {
+              "score": 2.8,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
               "weight": 0.2
             },
-            "冲突检测": {
-              "score": 5,
-              "desc": "是否指出了日程中的时间冲突",
-              "weight": 0.15
-            },
-            "完整度": {
-              "score": 5,
-              "desc": "条目数量是否覆盖了图片中的大部分信息",
-              "weight": 0.1
-            }
-          }
-        },
-        {
-          "model": "Qwen3-VL-32B",
-          "score": 5,
-          "latency": 19.46,
-          "sample": "```json { \"type\": \"周计划/课程表/会议表\", \"entries\": [ { \"day\": \"周一\", \"time\": \"8:00-9:45\", \"event\": \"英语 C301\", \"category\": \"课程\" }, { \"day\": \"周一\", \"time\": \"14:00-15:45\", \"event\": \"微积分\", \"category\": \"课程\" }, { \"day\": \"周一\", \"time\": \"19:00-21:00\", \"event\": \"健身房\", \"category...",
-          "capability": "vision",
-          "score_detail": {
-            "OCR准确度": {
-              "score": 5,
-              "desc": "提取的时间+事件是否准确",
-              "weight": 0.3
-            },
-            "结构化输出": {
-              "score": 5,
-              "desc": "是否输出JSON/结构化格式",
-              "weight": 0.25
-            },
-            "日程分类": {
-              "score": 5,
-              "desc": "是否对条目做了分类（课程/会议/任务等）",
+            "任务依赖完整性": {
+              "score": 3.0,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
               "weight": 0.2
             },
-            "冲突检测": {
-              "score": 5,
-              "desc": "是否指出了日程中的时间冲突",
-              "weight": 0.15
+            "资源分配均衡度": {
+              "score": 2.2,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
             },
-            "完整度": {
-              "score": 5,
-              "desc": "条目数量是否覆盖了图片中的大部分信息",
-              "weight": 0.1
+            "约束条件满足度": {
+              "score": 2.8,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 3.0,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
             }
           }
         },
         {
-          "model": "DeepSeek-V4-Flash",
-          "score": 1,
-          "latency": 0.0,
-          "sample": "[能力限制] DeepSeek-V4-Flash是纯文本模型，不支持图像输入。",
+          "model": "智谱 GLM-4 9B",
+          "score": 3,
+          "latency": 61.5,
+          "sample": "[ScheduleBench] 智谱 GLM-4 9B 在 紧截止日期排期 的评测结果\n时间安排合理性: 14/20 (归一化 3.5/5)\n任务依赖完整性: 13/20 (归一化 3.2/5)\n资源分配均衡度: 13/20 (归一化 3.2/5)\n约束条件满足度: 15/20 (归一化 3.8/5)\n可执行性与粒度: 14/20 (归一化 3.5/5)\nAI总分: 69/100 (归一化 3.4",
           "capability": "text",
           "score_detail": {
-            "能力限制": {
-              "score": 1,
-              "desc": "纯文本模型不支持图像输入",
-              "weight": 1.0
+            "时间安排合理性": {
+              "score": 3.5,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
+              "weight": 0.2
+            },
+            "任务依赖完整性": {
+              "score": 3.2,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
+            },
+            "资源分配均衡度": {
+              "score": 3.2,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 3.8,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 3.5,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
             }
           }
         },
         {
-          "model": "DeepSeek-V3.2",
-          "score": 1,
-          "latency": 0.0,
-          "sample": "[能力限制] DeepSeek-V3.2是纯文本模型，不支持图像输入。",
+          "model": "通义千问2.5 32B",
+          "score": 3,
+          "latency": 69.5,
+          "sample": "[ScheduleBench] 通义千问2.5 32B 在 紧截止日期排期 的评测结果\n时间安排合理性: 13/20 (归一化 3.2/5)\n任务依赖完整性: 12/20 (归一化 3.0/5)\n资源分配均衡度: 11/20 (归一化 2.8/5)\n约束条件满足度: 15/20 (归一化 3.8/5)\n可执行性与粒度: 13/20 (归一化 3.2/5)\nAI总分: 64/100 (归一化 3.2",
           "capability": "text",
           "score_detail": {
-            "能力限制": {
-              "score": 1,
-              "desc": "纯文本模型不支持图像输入",
-              "weight": 1.0
+            "时间安排合理性": {
+              "score": 3.2,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
+              "weight": 0.2
+            },
+            "任务依赖完整性": {
+              "score": 3.0,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
+            },
+            "资源分配均衡度": {
+              "score": 2.8,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 3.8,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 3.2,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
             }
           }
         },
         {
-          "model": "Qwen3.6-27B",
-          "score": 1,
-          "latency": 0.0,
-          "sample": "[能力限制] Qwen3.6-27B是纯文本模型，不支持图像输入。",
+          "model": "DeepSeek-V3",
+          "score": 3,
+          "latency": 90.1,
+          "sample": "[ScheduleBench] DeepSeek-V3 在 紧截止日期排期 的评测结果\n时间安排合理性: 14/20 (归一化 3.5/5)\n任务依赖完整性: 13/20 (归一化 3.2/5)\n资源分配均衡度: 13/20 (归一化 3.2/5)\n约束条件满足度: 15/20 (归一化 3.8/5)\n可执行性与粒度: 13/20 (归一化 3.2/5)\nAI总分: 68/100 (归一化 3.4",
           "capability": "text",
           "score_detail": {
-            "能力限制": {
-              "score": 1,
-              "desc": "纯文本模型不支持图像输入",
-              "weight": 1.0
+            "时间安排合理性": {
+              "score": 3.5,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
+              "weight": 0.2
+            },
+            "任务依赖完整性": {
+              "score": 3.2,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
+            },
+            "资源分配均衡度": {
+              "score": 3.2,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 3.8,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 3.2,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
+            }
+          }
+        },
+        {
+          "model": "豆包 Seed 36B",
+          "score": 3,
+          "latency": 210.5,
+          "sample": "[ScheduleBench] 豆包 Seed 36B 在 紧截止日期排期 的评测结果\n时间安排合理性: 12/20 (归一化 3.0/5)\n任务依赖完整性: 14/20 (归一化 3.5/5)\n资源分配均衡度: 13/20 (归一化 3.2/5)\n约束条件满足度: 15/20 (归一化 3.8/5)\n可执行性与粒度: 12/20 (归一化 3.0/5)\nAI总分: 66/100 (归一化 3.3",
+          "capability": "text",
+          "score_detail": {
+            "时间安排合理性": {
+              "score": 3.0,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
+              "weight": 0.2
+            },
+            "任务依赖完整性": {
+              "score": 3.5,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
+            },
+            "资源分配均衡度": {
+              "score": 3.2,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 3.8,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 3.0,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
+            }
+          }
+        }
+      ]
+    },
+    "schedule_r5": {
+      "task": {
+        "id": "schedule_r5",
+        "title": "多人多技能约束排期",
+        "type": "text",
+        "round": "R5",
+        "prompt": "ScheduleBench排期任务-R5",
+        "rubric": "基于5维评分：时间安排、任务依赖、资源分配、约束满足、可执行性"
+      },
+      "ranking": [
+        {
+          "model": "通义千问2.5 14B",
+          "score": 3,
+          "latency": 59.1,
+          "sample": "[ScheduleBench] 通义千问2.5 14B 在 多人多技能约束排期 的评测结果\n时间安排合理性: 12/20 (归一化 3.0/5)\n任务依赖完整性: 13/20 (归一化 3.2/5)\n资源分配均衡度: 9/20 (归一化 2.2/5)\n约束条件满足度: 13/20 (归一化 3.2/5)\n可执行性与粒度: 8/20 (归一化 2.0/5)\nAI总分: 55/100 (归一化 2.8",
+          "capability": "text",
+          "score_detail": {
+            "时间安排合理性": {
+              "score": 3.0,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
+              "weight": 0.2
+            },
+            "任务依赖完整性": {
+              "score": 3.2,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
+            },
+            "资源分配均衡度": {
+              "score": 2.2,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 3.2,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 2.0,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
+            }
+          }
+        },
+        {
+          "model": "智谱 GLM-4 9B",
+          "score": 3,
+          "latency": 63.6,
+          "sample": "[ScheduleBench] 智谱 GLM-4 9B 在 多人多技能约束排期 的评测结果\n时间安排合理性: 14/20 (归一化 3.5/5)\n任务依赖完整性: 14/20 (归一化 3.5/5)\n资源分配均衡度: 12/20 (归一化 3.0/5)\n约束条件满足度: 15/20 (归一化 3.8/5)\n可执行性与粒度: 13/20 (归一化 3.2/5)\nAI总分: 68/100 (归一化 3",
+          "capability": "text",
+          "score_detail": {
+            "时间安排合理性": {
+              "score": 3.5,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
+              "weight": 0.2
+            },
+            "任务依赖完整性": {
+              "score": 3.5,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
+            },
+            "资源分配均衡度": {
+              "score": 3.0,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 3.8,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 3.2,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
+            }
+          }
+        },
+        {
+          "model": "DeepSeek-V3",
+          "score": 3,
+          "latency": 144.3,
+          "sample": "[ScheduleBench] DeepSeek-V3 在 多人多技能约束排期 的评测结果\n时间安排合理性: 13/20 (归一化 3.2/5)\n任务依赖完整性: 15/20 (归一化 3.8/5)\n资源分配均衡度: 12/20 (归一化 3.0/5)\n约束条件满足度: 13/20 (归一化 3.2/5)\n可执行性与粒度: 14/20 (归一化 3.5/5)\nAI总分: 67/100 (归一化 3",
+          "capability": "text",
+          "score_detail": {
+            "时间安排合理性": {
+              "score": 3.2,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
+              "weight": 0.2
+            },
+            "任务依赖完整性": {
+              "score": 3.8,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
+            },
+            "资源分配均衡度": {
+              "score": 3.0,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 3.2,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 3.5,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
+            }
+          }
+        },
+        {
+          "model": "豆包 Seed 36B",
+          "score": 3,
+          "latency": 249.5,
+          "sample": "[ScheduleBench] 豆包 Seed 36B 在 多人多技能约束排期 的评测结果\n时间安排合理性: 14/20 (归一化 3.5/5)\n任务依赖完整性: 13/20 (归一化 3.2/5)\n资源分配均衡度: 12/20 (归一化 3.0/5)\n约束条件满足度: 16/20 (归一化 4.0/5)\n可执行性与粒度: 14/20 (归一化 3.5/5)\nAI总分: 69/100 (归一化 3",
+          "capability": "text",
+          "score_detail": {
+            "时间安排合理性": {
+              "score": 3.5,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
+              "weight": 0.2
+            },
+            "任务依赖完整性": {
+              "score": 3.2,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
+            },
+            "资源分配均衡度": {
+              "score": 3.0,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 4.0,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 3.5,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
+            }
+          }
+        },
+        {
+          "model": "通义千问2.5 32B",
+          "score": 2,
+          "latency": 80.4,
+          "sample": "[ScheduleBench] 通义千问2.5 32B 在 多人多技能约束排期 的评测结果\n时间安排合理性: 9/20 (归一化 2.2/5)\n任务依赖完整性: 11/20 (归一化 2.8/5)\n资源分配均衡度: 7/20 (归一化 1.8/5)\n约束条件满足度: 6/20 (归一化 1.5/5)\n可执行性与粒度: 6/20 (归一化 1.5/5)\nAI总分: 39/100 (归一化 2.0/5",
+          "capability": "text",
+          "score_detail": {
+            "时间安排合理性": {
+              "score": 2.2,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
+              "weight": 0.2
+            },
+            "任务依赖完整性": {
+              "score": 2.8,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
+            },
+            "资源分配均衡度": {
+              "score": 1.8,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 1.5,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 1.5,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
+            }
+          }
+        }
+      ]
+    },
+    "schedule_r6": {
+      "task": {
+        "id": "schedule_r6",
+        "title": "并行任务最大化排期",
+        "type": "text",
+        "round": "R6",
+        "prompt": "ScheduleBench排期任务-R6",
+        "rubric": "基于5维评分：时间安排、任务依赖、资源分配、约束满足、可执行性"
+      },
+      "ranking": [
+        {
+          "model": "通义千问2.5 32B",
+          "score": 3,
+          "latency": 52.3,
+          "sample": "[ScheduleBench] 通义千问2.5 32B 在 并行任务最大化排期 的评测结果\n时间安排合理性: 13/20 (归一化 3.2/5)\n任务依赖完整性: 12/20 (归一化 3.0/5)\n资源分配均衡度: 11/20 (归一化 2.8/5)\n约束条件满足度: 12/20 (归一化 3.0/5)\n可执行性与粒度: 11/20 (归一化 2.8/5)\nAI总分: 59/100 (归一化 2",
+          "capability": "text",
+          "score_detail": {
+            "时间安排合理性": {
+              "score": 3.2,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
+              "weight": 0.2
+            },
+            "任务依赖完整性": {
+              "score": 3.0,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
+            },
+            "资源分配均衡度": {
+              "score": 2.8,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 3.0,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 2.8,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
+            }
+          }
+        },
+        {
+          "model": "通义千问2.5 14B",
+          "score": 3,
+          "latency": 56.5,
+          "sample": "[ScheduleBench] 通义千问2.5 14B 在 并行任务最大化排期 的评测结果\n时间安排合理性: 13/20 (归一化 3.2/5)\n任务依赖完整性: 11/20 (归一化 2.8/5)\n资源分配均衡度: 12/20 (归一化 3.0/5)\n约束条件满足度: 14/20 (归一化 3.5/5)\n可执行性与粒度: 11/20 (归一化 2.8/5)\nAI总分: 61/100 (归一化 3",
+          "capability": "text",
+          "score_detail": {
+            "时间安排合理性": {
+              "score": 3.2,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
+              "weight": 0.2
+            },
+            "任务依赖完整性": {
+              "score": 2.8,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
+            },
+            "资源分配均衡度": {
+              "score": 3.0,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 3.5,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 2.8,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
+            }
+          }
+        },
+        {
+          "model": "智谱 GLM-4 9B",
+          "score": 3,
+          "latency": 57.5,
+          "sample": "[ScheduleBench] 智谱 GLM-4 9B 在 并行任务最大化排期 的评测结果\n时间安排合理性: 13/20 (归一化 3.2/5)\n任务依赖完整性: 14/20 (归一化 3.5/5)\n资源分配均衡度: 11/20 (归一化 2.8/5)\n约束条件满足度: 14/20 (归一化 3.5/5)\n可执行性与粒度: 12/20 (归一化 3.0/5)\nAI总分: 64/100 (归一化 3",
+          "capability": "text",
+          "score_detail": {
+            "时间安排合理性": {
+              "score": 3.2,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
+              "weight": 0.2
+            },
+            "任务依赖完整性": {
+              "score": 3.5,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
+            },
+            "资源分配均衡度": {
+              "score": 2.8,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 3.5,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 3.0,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
+            }
+          }
+        },
+        {
+          "model": "DeepSeek-V3",
+          "score": 3,
+          "latency": 138.1,
+          "sample": "[ScheduleBench] DeepSeek-V3 在 并行任务最大化排期 的评测结果\n时间安排合理性: 14/20 (归一化 3.5/5)\n任务依赖完整性: 13/20 (归一化 3.2/5)\n资源分配均衡度: 14/20 (归一化 3.5/5)\n约束条件满足度: 15/20 (归一化 3.8/5)\n可执行性与粒度: 13/20 (归一化 3.2/5)\nAI总分: 69/100 (归一化 3",
+          "capability": "text",
+          "score_detail": {
+            "时间安排合理性": {
+              "score": 3.5,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
+              "weight": 0.2
+            },
+            "任务依赖完整性": {
+              "score": 3.2,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
+            },
+            "资源分配均衡度": {
+              "score": 3.5,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 3.8,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 3.2,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
+            }
+          }
+        },
+        {
+          "model": "豆包 Seed 36B",
+          "score": 3,
+          "latency": 212.4,
+          "sample": "[ScheduleBench] 豆包 Seed 36B 在 并行任务最大化排期 的评测结果\n时间安排合理性: 13/20 (归一化 3.2/5)\n任务依赖完整性: 15/20 (归一化 3.8/5)\n资源分配均衡度: 13/20 (归一化 3.2/5)\n约束条件满足度: 14/20 (归一化 3.5/5)\n可执行性与粒度: 12/20 (归一化 3.0/5)\nAI总分: 67/100 (归一化 3",
+          "capability": "text",
+          "score_detail": {
+            "时间安排合理性": {
+              "score": 3.2,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
+              "weight": 0.2
+            },
+            "任务依赖完整性": {
+              "score": 3.8,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
+            },
+            "资源分配均衡度": {
+              "score": 3.2,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 3.5,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 3.0,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
+            }
+          }
+        }
+      ]
+    },
+    "schedule_r7": {
+      "task": {
+        "id": "schedule_r7",
+        "title": "动态优先级调整排期",
+        "type": "text",
+        "round": "R7",
+        "prompt": "ScheduleBench排期任务-R7",
+        "rubric": "基于5维评分：时间安排、任务依赖、资源分配、约束满足、可执行性"
+      },
+      "ranking": [
+        {
+          "model": "豆包 Seed 36B",
+          "score": 4,
+          "latency": 335.2,
+          "sample": "[ScheduleBench] 豆包 Seed 36B 在 动态优先级调整排期 的评测结果\n时间安排合理性: 14/20 (归一化 3.5/5)\n任务依赖完整性: 15/20 (归一化 3.8/5)\n资源分配均衡度: 13/20 (归一化 3.2/5)\n约束条件满足度: 16/20 (归一化 4.0/5)\n可执行性与粒度: 12/20 (归一化 3.0/5)\nAI总分: 70/100 (归一化 3",
+          "capability": "text",
+          "score_detail": {
+            "时间安排合理性": {
+              "score": 3.5,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
+              "weight": 0.2
+            },
+            "任务依赖完整性": {
+              "score": 3.8,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
+            },
+            "资源分配均衡度": {
+              "score": 3.2,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 4.0,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 3.0,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
+            }
+          }
+        },
+        {
+          "model": "通义千问2.5 14B",
+          "score": 3,
+          "latency": 58.0,
+          "sample": "[ScheduleBench] 通义千问2.5 14B 在 动态优先级调整排期 的评测结果\n时间安排合理性: 12/20 (归一化 3.0/5)\n任务依赖完整性: 13/20 (归一化 3.2/5)\n资源分配均衡度: 10/20 (归一化 2.5/5)\n约束条件满足度: 8/20 (归一化 2.0/5)\n可执行性与粒度: 9/20 (归一化 2.2/5)\nAI总分: 52/100 (归一化 2.6",
+          "capability": "text",
+          "score_detail": {
+            "时间安排合理性": {
+              "score": 3.0,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
+              "weight": 0.2
+            },
+            "任务依赖完整性": {
+              "score": 3.2,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
+            },
+            "资源分配均衡度": {
+              "score": 2.5,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 2.0,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 2.2,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
+            }
+          }
+        },
+        {
+          "model": "DeepSeek-V3",
+          "score": 3,
+          "latency": 98.1,
+          "sample": "[ScheduleBench] DeepSeek-V3 在 动态优先级调整排期 的评测结果\n时间安排合理性: 11/20 (归一化 2.8/5)\n任务依赖完整性: 12/20 (归一化 3.0/5)\n资源分配均衡度: 13/20 (归一化 3.2/5)\n约束条件满足度: 12/20 (归一化 3.0/5)\n可执行性与粒度: 11/20 (归一化 2.8/5)\nAI总分: 59/100 (归一化 2",
+          "capability": "text",
+          "score_detail": {
+            "时间安排合理性": {
+              "score": 2.8,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
+              "weight": 0.2
+            },
+            "任务依赖完整性": {
+              "score": 3.0,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
+            },
+            "资源分配均衡度": {
+              "score": 3.2,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 3.0,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 2.8,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
+            }
+          }
+        },
+        {
+          "model": "智谱 GLM-4 9B",
+          "score": 2,
+          "latency": 64.9,
+          "sample": "[ScheduleBench] 智谱 GLM-4 9B 在 动态优先级调整排期 的评测结果\n时间安排合理性: 8/20 (归一化 2.0/5)\n任务依赖完整性: 7/20 (归一化 1.8/5)\n资源分配均衡度: 5/20 (归一化 1.2/5)\n约束条件满足度: 4/20 (归一化 1.0/5)\n可执行性与粒度: 6/20 (归一化 1.5/5)\nAI总分: 30/100 (归一化 1.5/5)",
+          "capability": "text",
+          "score_detail": {
+            "时间安排合理性": {
+              "score": 2.0,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
+              "weight": 0.2
+            },
+            "任务依赖完整性": {
+              "score": 1.8,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
+            },
+            "资源分配均衡度": {
+              "score": 1.2,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 1.0,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 1.5,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
+            }
+          }
+        },
+        {
+          "model": "通义千问2.5 32B",
+          "score": 2,
+          "latency": 66.1,
+          "sample": "[ScheduleBench] 通义千问2.5 32B 在 动态优先级调整排期 的评测结果\n时间安排合理性: 10/20 (归一化 2.5/5)\n任务依赖完整性: 9/20 (归一化 2.2/5)\n资源分配均衡度: 8/20 (归一化 2.0/5)\n约束条件满足度: 11/20 (归一化 2.8/5)\n可执行性与粒度: 8/20 (归一化 2.0/5)\nAI总分: 46/100 (归一化 2.3/",
+          "capability": "text",
+          "score_detail": {
+            "时间安排合理性": {
+              "score": 2.5,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
+              "weight": 0.2
+            },
+            "任务依赖完整性": {
+              "score": 2.2,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
+            },
+            "资源分配均衡度": {
+              "score": 2.0,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 2.8,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 2.0,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
+            }
+          }
+        }
+      ]
+    },
+    "schedule_r8": {
+      "task": {
+        "id": "schedule_r8",
+        "title": "跨周长期排期",
+        "type": "text",
+        "round": "R8",
+        "prompt": "ScheduleBench排期任务-R8",
+        "rubric": "基于5维评分：时间安排、任务依赖、资源分配、约束满足、可执行性"
+      },
+      "ranking": [
+        {
+          "model": "DeepSeek-V3",
+          "score": 4,
+          "latency": 76.3,
+          "sample": "[ScheduleBench] DeepSeek-V3 在 跨周长期排期 的评测结果\n时间安排合理性: 15/20 (归一化 3.8/5)\n任务依赖完整性: 13/20 (归一化 3.2/5)\n资源分配均衡度: 13/20 (归一化 3.2/5)\n约束条件满足度: 18/20 (归一化 4.5/5)\n可执行性与粒度: 13/20 (归一化 3.2/5)\nAI总分: 72/100 (归一化 3.6/",
+          "capability": "text",
+          "score_detail": {
+            "时间安排合理性": {
+              "score": 3.8,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
+              "weight": 0.2
+            },
+            "任务依赖完整性": {
+              "score": 3.2,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
+            },
+            "资源分配均衡度": {
+              "score": 3.2,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 4.5,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 3.2,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
+            }
+          }
+        },
+        {
+          "model": "豆包 Seed 36B",
+          "score": 4,
+          "latency": 218.1,
+          "sample": "[ScheduleBench] 豆包 Seed 36B 在 跨周长期排期 的评测结果\n时间安排合理性: 14/20 (归一化 3.5/5)\n任务依赖完整性: 14/20 (归一化 3.5/5)\n资源分配均衡度: 13/20 (归一化 3.2/5)\n约束条件满足度: 18/20 (归一化 4.5/5)\n可执行性与粒度: 13/20 (归一化 3.2/5)\nAI总分: 72/100 (归一化 3.6/",
+          "capability": "text",
+          "score_detail": {
+            "时间安排合理性": {
+              "score": 3.5,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
+              "weight": 0.2
+            },
+            "任务依赖完整性": {
+              "score": 3.5,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
+            },
+            "资源分配均衡度": {
+              "score": 3.2,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 4.5,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 3.2,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
+            }
+          }
+        },
+        {
+          "model": "通义千问2.5 32B",
+          "score": 3,
+          "latency": 49.4,
+          "sample": "[ScheduleBench] 通义千问2.5 32B 在 跨周长期排期 的评测结果\n时间安排合理性: 13/20 (归一化 3.2/5)\n任务依赖完整性: 12/20 (归一化 3.0/5)\n资源分配均衡度: 11/20 (归一化 2.8/5)\n约束条件满足度: 16/20 (归一化 4.0/5)\n可执行性与粒度: 12/20 (归一化 3.0/5)\nAI总分: 64/100 (归一化 3.2/",
+          "capability": "text",
+          "score_detail": {
+            "时间安排合理性": {
+              "score": 3.2,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
+              "weight": 0.2
+            },
+            "任务依赖完整性": {
+              "score": 3.0,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
+            },
+            "资源分配均衡度": {
+              "score": 2.8,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 4.0,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 3.0,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
+            }
+          }
+        },
+        {
+          "model": "智谱 GLM-4 9B",
+          "score": 3,
+          "latency": 51.9,
+          "sample": "[ScheduleBench] 智谱 GLM-4 9B 在 跨周长期排期 的评测结果\n时间安排合理性: 12/20 (归一化 3.0/5)\n任务依赖完整性: 11/20 (归一化 2.8/5)\n资源分配均衡度: 10/20 (归一化 2.5/5)\n约束条件满足度: 11/20 (归一化 2.8/5)\n可执行性与粒度: 9/20 (归一化 2.2/5)\nAI总分: 53/100 (归一化 2.7/5",
+          "capability": "text",
+          "score_detail": {
+            "时间安排合理性": {
+              "score": 3.0,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
+              "weight": 0.2
+            },
+            "任务依赖完整性": {
+              "score": 2.8,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
+            },
+            "资源分配均衡度": {
+              "score": 2.5,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 2.8,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 2.2,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
+            }
+          }
+        },
+        {
+          "model": "通义千问2.5 14B",
+          "score": 1,
+          "latency": 39.1,
+          "sample": "[ScheduleBench] 通义千问2.5 14B 在 跨周长期排期 的评测结果\n时间安排合理性: 7/20 (归一化 1.8/5)\n任务依赖完整性: 5/20 (归一化 1.2/5)\n资源分配均衡度: 6/20 (归一化 1.5/5)\n约束条件满足度: 4/20 (归一化 1.0/5)\n可执行性与粒度: 5/20 (归一化 1.2/5)\nAI总分: 27/100 (归一化 1.4/5)",
+          "capability": "text",
+          "score_detail": {
+            "时间安排合理性": {
+              "score": 1.8,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
+              "weight": 0.2
+            },
+            "任务依赖完整性": {
+              "score": 1.2,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
+            },
+            "资源分配均衡度": {
+              "score": 1.5,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 1.0,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 1.2,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
+            }
+          }
+        }
+      ]
+    },
+    "schedule_r9": {
+      "task": {
+        "id": "schedule_r9",
+        "title": "成员不可用时段约束",
+        "type": "text",
+        "round": "R9",
+        "prompt": "ScheduleBench排期任务-R9",
+        "rubric": "基于5维评分：时间安排、任务依赖、资源分配、约束满足、可执行性"
+      },
+      "ranking": [
+        {
+          "model": "DeepSeek-V3",
+          "score": 4,
+          "latency": 126.9,
+          "sample": "[ScheduleBench] DeepSeek-V3 在 成员不可用时段约束 的评测结果\n时间安排合理性: 15/20 (归一化 3.8/5)\n任务依赖完整性: 14/20 (归一化 3.5/5)\n资源分配均衡度: 13/20 (归一化 3.2/5)\n约束条件满足度: 15/20 (归一化 3.8/5)\n可执行性与粒度: 14/20 (归一化 3.5/5)\nAI总分: 71/100 (归一化 3",
+          "capability": "text",
+          "score_detail": {
+            "时间安排合理性": {
+              "score": 3.8,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
+              "weight": 0.2
+            },
+            "任务依赖完整性": {
+              "score": 3.5,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
+            },
+            "资源分配均衡度": {
+              "score": 3.2,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 3.8,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 3.5,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
+            }
+          }
+        },
+        {
+          "model": "豆包 Seed 36B",
+          "score": 4,
+          "latency": 210.2,
+          "sample": "[ScheduleBench] 豆包 Seed 36B 在 成员不可用时段约束 的评测结果\n时间安排合理性: 15/20 (归一化 3.8/5)\n任务依赖完整性: 16/20 (归一化 4.0/5)\n资源分配均衡度: 14/20 (归一化 3.5/5)\n约束条件满足度: 17/20 (归一化 4.2/5)\n可执行性与粒度: 13/20 (归一化 3.2/5)\nAI总分: 75/100 (归一化 3",
+          "capability": "text",
+          "score_detail": {
+            "时间安排合理性": {
+              "score": 3.8,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
+              "weight": 0.2
+            },
+            "任务依赖完整性": {
+              "score": 4.0,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
+            },
+            "资源分配均衡度": {
+              "score": 3.5,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 4.2,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 3.2,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
+            }
+          }
+        },
+        {
+          "model": "通义千问2.5 14B",
+          "score": 3,
+          "latency": 38.4,
+          "sample": "[ScheduleBench] 通义千问2.5 14B 在 成员不可用时段约束 的评测结果\n时间安排合理性: 12/20 (归一化 3.0/5)\n任务依赖完整性: 13/20 (归一化 3.2/5)\n资源分配均衡度: 11/20 (归一化 2.8/5)\n约束条件满足度: 12/20 (归一化 3.0/5)\n可执行性与粒度: 10/20 (归一化 2.5/5)\nAI总分: 58/100 (归一化 2",
+          "capability": "text",
+          "score_detail": {
+            "时间安排合理性": {
+              "score": 3.0,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
+              "weight": 0.2
+            },
+            "任务依赖完整性": {
+              "score": 3.2,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
+            },
+            "资源分配均衡度": {
+              "score": 2.8,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 3.0,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 2.5,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
+            }
+          }
+        },
+        {
+          "model": "智谱 GLM-4 9B",
+          "score": 3,
+          "latency": 65.9,
+          "sample": "[ScheduleBench] 智谱 GLM-4 9B 在 成员不可用时段约束 的评测结果\n时间安排合理性: 14/20 (归一化 3.5/5)\n任务依赖完整性: 14/20 (归一化 3.5/5)\n资源分配均衡度: 12/20 (归一化 3.0/5)\n约束条件满足度: 15/20 (归一化 3.8/5)\n可执行性与粒度: 13/20 (归一化 3.2/5)\nAI总分: 68/100 (归一化 3",
+          "capability": "text",
+          "score_detail": {
+            "时间安排合理性": {
+              "score": 3.5,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
+              "weight": 0.2
+            },
+            "任务依赖完整性": {
+              "score": 3.5,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
+            },
+            "资源分配均衡度": {
+              "score": 3.0,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 3.8,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 3.2,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
+            }
+          }
+        },
+        {
+          "model": "通义千问2.5 32B",
+          "score": 3,
+          "latency": 68.4,
+          "sample": "[ScheduleBench] 通义千问2.5 32B 在 成员不可用时段约束 的评测结果\n时间安排合理性: 14/20 (归一化 3.5/5)\n任务依赖完整性: 13/20 (归一化 3.2/5)\n资源分配均衡度: 12/20 (归一化 3.0/5)\n约束条件满足度: 15/20 (归一化 3.8/5)\n可执行性与粒度: 13/20 (归一化 3.2/5)\nAI总分: 67/100 (归一化 3",
+          "capability": "text",
+          "score_detail": {
+            "时间安排合理性": {
+              "score": 3.5,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
+              "weight": 0.2
+            },
+            "任务依赖完整性": {
+              "score": 3.2,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
+            },
+            "资源分配均衡度": {
+              "score": 3.0,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 3.8,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 3.2,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
+            }
+          }
+        }
+      ]
+    },
+    "schedule_r10": {
+      "task": {
+        "id": "schedule_r10",
+        "title": "复杂综合场景排期",
+        "type": "text",
+        "round": "R10",
+        "prompt": "ScheduleBench排期任务-R10",
+        "rubric": "基于5维评分：时间安排、任务依赖、资源分配、约束满足、可执行性"
+      },
+      "ranking": [
+        {
+          "model": "通义千问2.5 14B",
+          "score": 3,
+          "latency": 63.5,
+          "sample": "[ScheduleBench] 通义千问2.5 14B 在 复杂综合场景排期 的评测结果\n时间安排合理性: 13/20 (归一化 3.2/5)\n任务依赖完整性: 12/20 (归一化 3.0/5)\n资源分配均衡度: 11/20 (归一化 2.8/5)\n约束条件满足度: 12/20 (归一化 3.0/5)\n可执行性与粒度: 11/20 (归一化 2.8/5)\nAI总分: 59/100 (归一化 2.",
+          "capability": "text",
+          "score_detail": {
+            "时间安排合理性": {
+              "score": 3.2,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
+              "weight": 0.2
+            },
+            "任务依赖完整性": {
+              "score": 3.0,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
+            },
+            "资源分配均衡度": {
+              "score": 2.8,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 3.0,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 2.8,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
+            }
+          }
+        },
+        {
+          "model": "通义千问2.5 32B",
+          "score": 3,
+          "latency": 66.2,
+          "sample": "[ScheduleBench] 通义千问2.5 32B 在 复杂综合场景排期 的评测结果\n时间安排合理性: 14/20 (归一化 3.5/5)\n任务依赖完整性: 15/20 (归一化 3.8/5)\n资源分配均衡度: 13/20 (归一化 3.2/5)\n约束条件满足度: 14/20 (归一化 3.5/5)\n可执行性与粒度: 12/20 (归一化 3.0/5)\nAI总分: 68/100 (归一化 3.",
+          "capability": "text",
+          "score_detail": {
+            "时间安排合理性": {
+              "score": 3.5,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
+              "weight": 0.2
+            },
+            "任务依赖完整性": {
+              "score": 3.8,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
+            },
+            "资源分配均衡度": {
+              "score": 3.2,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 3.5,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 3.0,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
+            }
+          }
+        },
+        {
+          "model": "DeepSeek-V3",
+          "score": 3,
+          "latency": 72.8,
+          "sample": "[ScheduleBench] DeepSeek-V3 在 复杂综合场景排期 的评测结果\n时间安排合理性: 14/20 (归一化 3.5/5)\n任务依赖完整性: 13/20 (归一化 3.2/5)\n资源分配均衡度: 12/20 (归一化 3.0/5)\n约束条件满足度: 16/20 (归一化 4.0/5)\n可执行性与粒度: 13/20 (归一化 3.2/5)\nAI总分: 68/100 (归一化 3.",
+          "capability": "text",
+          "score_detail": {
+            "时间安排合理性": {
+              "score": 3.5,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
+              "weight": 0.2
+            },
+            "任务依赖完整性": {
+              "score": 3.2,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
+            },
+            "资源分配均衡度": {
+              "score": 3.0,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 4.0,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 3.2,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
+            }
+          }
+        },
+        {
+          "model": "智谱 GLM-4 9B",
+          "score": 3,
+          "latency": 105.6,
+          "sample": "[ScheduleBench] 智谱 GLM-4 9B 在 复杂综合场景排期 的评测结果\n时间安排合理性: 11/20 (归一化 2.8/5)\n任务依赖完整性: 12/20 (归一化 3.0/5)\n资源分配均衡度: 10/20 (归一化 2.5/5)\n约束条件满足度: 13/20 (归一化 3.2/5)\n可执行性与粒度: 10/20 (归一化 2.5/5)\nAI总分: 56/100 (归一化 2.",
+          "capability": "text",
+          "score_detail": {
+            "时间安排合理性": {
+              "score": 2.8,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
+              "weight": 0.2
+            },
+            "任务依赖完整性": {
+              "score": 3.0,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
+            },
+            "资源分配均衡度": {
+              "score": 2.5,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 3.2,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 2.5,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
+            }
+          }
+        },
+        {
+          "model": "豆包 Seed 36B",
+          "score": 3,
+          "latency": 251.8,
+          "sample": "[ScheduleBench] 豆包 Seed 36B 在 复杂综合场景排期 的评测结果\n时间安排合理性: 15/20 (归一化 3.8/5)\n任务依赖完整性: 14/20 (归一化 3.5/5)\n资源分配均衡度: 13/20 (归一化 3.2/5)\n约束条件满足度: 14/20 (归一化 3.5/5)\n可执行性与粒度: 12/20 (归一化 3.0/5)\nAI总分: 68/100 (归一化 3.",
+          "capability": "text",
+          "score_detail": {
+            "时间安排合理性": {
+              "score": 3.8,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
+              "weight": 0.2
+            },
+            "任务依赖完整性": {
+              "score": 3.5,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
+            },
+            "资源分配均衡度": {
+              "score": 3.2,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 3.5,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 3.0,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
+            }
+          }
+        }
+      ]
+    },
+    "schedule_overall": {
+      "task": {
+        "id": "schedule_overall",
+        "title": "综合排期能力（10场景均值）",
+        "type": "text",
+        "round": "聚合均值",
+        "prompt": "ScheduleBench全场景综合评测",
+        "rubric": "10个排期场景的5维评分均值"
+      },
+      "ranking": [
+        {
+          "model": "DeepSeek-V3",
+          "score": 5,
+          "latency": 0,
+          "sample": "[ScheduleBench聚合] DeepSeek-V3 10场景均值\n时间安排合理性: 12.8/20 (归一化 3.2/5)\n任务依赖完整性: 13.0/20 (归一化 3.2/5)\n资源分配均衡度: 14.7/20 (归一化 3.7/5)\n约束条件满足度: 12.6/20 (归一化 3.1/5)\n可执行性与粒度: 66.6/20 (归一化 5.0/5)\nAI总分均值: 119.7/100 ",
+          "capability": "text",
+          "score_detail": {
+            "时间安排合理性": {
+              "score": 3.2,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
+              "weight": 0.2
+            },
+            "任务依赖完整性": {
+              "score": 3.2,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
+            },
+            "资源分配均衡度": {
+              "score": 3.7,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 3.1,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 5.0,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
+            }
+          }
+        },
+        {
+          "model": "豆包 Seed 36B",
+          "score": 5,
+          "latency": 0,
+          "sample": "[ScheduleBench聚合] 豆包 Seed 36B 10场景均值\n时间安排合理性: 14.3/20 (归一化 3.6/5)\n任务依赖完整性: 12.8/20 (归一化 3.2/5)\n资源分配均衡度: 15.9/20 (归一化 4.0/5)\n约束条件满足度: 12.4/20 (归一化 3.1/5)\n可执行性与粒度: 69.2/20 (归一化 5.0/5)\nAI总分均值: 124.6/100 ",
+          "capability": "text",
+          "score_detail": {
+            "时间安排合理性": {
+              "score": 3.6,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
+              "weight": 0.2
+            },
+            "任务依赖完整性": {
+              "score": 3.2,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
+            },
+            "资源分配均衡度": {
+              "score": 4.0,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 3.1,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 5.0,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
+            }
+          }
+        },
+        {
+          "model": "通义千问2.5 32B",
+          "score": 5,
+          "latency": 0,
+          "sample": "[ScheduleBench聚合] 通义千问2.5 32B 10场景均值\n时间安排合理性: 12.0/20 (归一化 3.0/5)\n任务依赖完整性: 10.6/20 (归一化 2.7/5)\n资源分配均衡度: 12.6/20 (归一化 3.1/5)\n约束条件满足度: 10.6/20 (归一化 2.7/5)\n可执行性与粒度: 58.1/20 (归一化 5.0/5)\nAI总分均值: 103.9/100 ",
+          "capability": "text",
+          "score_detail": {
+            "时间安排合理性": {
+              "score": 3.0,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
+              "weight": 0.2
+            },
+            "任务依赖完整性": {
+              "score": 2.7,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
+            },
+            "资源分配均衡度": {
+              "score": 3.1,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 2.7,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 5.0,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
+            }
+          }
+        },
+        {
+          "model": "通义千问2.5 14B",
+          "score": 5,
+          "latency": 0,
+          "sample": "[ScheduleBench聚合] 通义千问2.5 14B 10场景均值\n时间安排合理性: 11.7/20 (归一化 2.9/5)\n任务依赖完整性: 10.4/20 (归一化 2.6/5)\n资源分配均衡度: 10.6/20 (归一化 2.7/5)\n约束条件满足度: 9.6/20 (归一化 2.4/5)\n可执行性与粒度: 54.3/20 (归一化 5.0/5)\nAI总分均值: 96.6/100 (归",
+          "capability": "text",
+          "score_detail": {
+            "时间安排合理性": {
+              "score": 2.9,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
+              "weight": 0.2
+            },
+            "任务依赖完整性": {
+              "score": 2.6,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
+            },
+            "资源分配均衡度": {
+              "score": 2.7,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 2.4,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 5.0,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
+            }
+          }
+        },
+        {
+          "model": "智谱 GLM-4 9B",
+          "score": 5,
+          "latency": 0,
+          "sample": "[ScheduleBench聚合] 智谱 GLM-4 9B 10场景均值\n时间安排合理性: 11.8/20 (归一化 3.0/5)\n任务依赖完整性: 10.0/20 (归一化 2.5/5)\n资源分配均衡度: 11.5/20 (归一化 2.9/5)\n约束条件满足度: 10.2/20 (归一化 2.5/5)\n可执行性与粒度: 55.2/20 (归一化 5.0/5)\nAI总分均值: 98.7/100 (",
+          "capability": "text",
+          "score_detail": {
+            "时间安排合理性": {
+              "score": 3.0,
+              "desc": "时间分配是否合理，是否考虑了成员空闲时间",
+              "weight": 0.2
+            },
+            "任务依赖完整性": {
+              "score": 2.5,
+              "desc": "是否正确处理了任务间的依赖关系（串行/并行）",
+              "weight": 0.2
+            },
+            "资源分配均衡度": {
+              "score": 2.9,
+              "desc": "各成员的工作量是否均衡，有无过载或闲置",
+              "weight": 0.2
+            },
+            "约束条件满足度": {
+              "score": 2.5,
+              "desc": "是否满足所有硬约束（截止日期、技能匹配等）",
+              "weight": 0.2
+            },
+            "可执行性与粒度": {
+              "score": 5.0,
+              "desc": "任务拆分是否足够细、能否直接执行",
+              "weight": 0.2
             }
           }
         }
