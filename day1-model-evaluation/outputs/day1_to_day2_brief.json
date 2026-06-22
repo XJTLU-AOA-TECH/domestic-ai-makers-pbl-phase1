@@ -1,42 +1,128 @@
 {
-  "generated_at": "2026-06-22T21:42:24",
-  "purpose": "基于ScheduleBench排期评测结果的模型路由",
   "router": {
-    "product_planner": {
+    "multimodal_context": {
+      "preferred_model": "豆包 Seed 36B",
+      "evidence_task": "schedule_planning",
+      "score": 14.4,
+      "fallback_rule": "得分接近可切换至 DeepSeek-V3 或 通义千问2.5 32B 或 通义千问2.5 14B 或 智谱 GLM-4 9B",
+      "alternatives": [
+        {
+          "model": "DeepSeek-V3",
+          "score": 14.2
+        },
+        {
+          "model": "通义千问2.5 32B",
+          "score": 13.7
+        },
+        {
+          "model": "通义千问2.5 14B",
+          "score": 13.5
+        },
+        {
+          "model": "智谱 GLM-4 9B",
+          "score": 13.3
+        }
+      ]
+    },
+    "code_assistant": {
+      "preferred_model": "豆包 Seed 36B",
+      "evidence_task": "schedule_planning",
+      "score": 14.7,
+      "fallback_rule": "得分接近可切换至 DeepSeek-V3 或 通义千问2.5 32B 或 通义千问2.5 14B 或 智谱 GLM-4 9B",
+      "alternatives": [
+        {
+          "model": "DeepSeek-V3",
+          "score": 13.9
+        },
+        {
+          "model": "通义千问2.5 32B",
+          "score": 13.5
+        },
+        {
+          "model": "通义千问2.5 14B",
+          "score": 13.3
+        },
+        {
+          "model": "智谱 GLM-4 9B",
+          "score": 13.4
+        }
+      ]
+    },
+    "risk_checker": {
       "preferred_model": "DeepSeek-V3",
-      "score": 5,
-      "fallback_rule": "切换至综合排名第二的模型",
-      "evidence_task": "schedule_overall"
+      "evidence_task": "schedule_planning",
+      "score": 14.0,
+      "fallback_rule": "得分接近可切换至 通义千问2.5 32B 或 通义千问2.5 14B 或 智谱 GLM-4 9B",
+      "alternatives": [
+        {
+          "model": "通义千问2.5 32B",
+          "score": 12.8
+        },
+        {
+          "model": "通义千问2.5 14B",
+          "score": 12.7
+        },
+        {
+          "model": "智谱 GLM-4 9B",
+          "score": 12.5
+        }
+      ]
     },
     "context_designer": {
       "preferred_model": "豆包 Seed 36B",
-      "score": 4,
-      "fallback_rule": "切换至通义千问2.5 32B",
-      "evidence_task": "schedule_r1"
+      "evidence_task": "schedule_planning",
+      "score": 15.4,
+      "fallback_rule": "得分接近可切换至 DeepSeek-V3 或 通义千问2.5 32B",
+      "alternatives": [
+        {
+          "model": "DeepSeek-V3",
+          "score": 14.8
+        },
+        {
+          "model": "通义千问2.5 32B",
+          "score": 13.8
+        }
+      ]
     },
     "schema_generator": {
-      "preferred_model": "通义千问2.5 14B",
-      "score": 3,
-      "fallback_rule": "切换至通义千问2.5 14B",
-      "evidence_task": "schedule_r5"
+      "preferred_model": "DeepSeek-V3",
+      "evidence_task": "schedule_planning",
+      "score": 13.8,
+      "fallback_rule": "得分接近可切换至 通义千问2.5 32B 或 通义千问2.5 14B 或 智谱 GLM-4 9B",
+      "alternatives": [
+        {
+          "model": "通义千问2.5 32B",
+          "score": 12.8
+        },
+        {
+          "model": "通义千问2.5 14B",
+          "score": 12.3
+        },
+        {
+          "model": "智谱 GLM-4 9B",
+          "score": 12.6
+        }
+      ]
     },
-    "code_assistant": {
-      "preferred_model": "通义千问2.5 32B",
-      "score": 3,
-      "fallback_rule": "切换至豆包 Seed 36B",
-      "evidence_task": "schedule_r3"
-    },
-    "risk_checker": {
-      "preferred_model": "通义千问2.5 14B",
-      "score": 3,
-      "fallback_rule": "独立审查模型，与code_assistant(通义千问2.5 32B)不同",
-      "evidence_task": "schedule_r4"
-    },
-    "multimodal_context": {
-      "preferred_model": "通义千问2.5 14B",
-      "score": 3,
-      "fallback_rule": "复杂场景优先使用综合能力最强模型",
-      "evidence_task": "schedule_r10"
+    "product_planner": {
+      "preferred_model": "豆包 Seed 36B",
+      "evidence_task": "overall",
+      "score": 71,
+      "fallback_rule": "失败切换至DeepSeek-V3",
+      "alternatives": [
+        {
+          "model": "DeepSeek-V3",
+          "score": 69
+        }
+      ]
     }
-  }
+  },
+  "generated_at": "2026-06-22T21:53:24",
+  "purpose": "Day1 ScheduleBench 评测结果转为 Day2 模型路由依据",
+  "product_direction": "日程规划：基于大模型的项目排班与任务分配",
+  "day2_requirements": [
+    "每个 router key 对应一个任务角色",
+    "得分接近的模型列为备选",
+    "fallback 必须具体可执行"
+  ]
 }
